@@ -66,6 +66,7 @@ export class Preloader extends Phaser.Scene {
         this.load.image("backgroundCaceria", "BG_Noche_01.png");
         this.load.image("lobo", "Lobison pixelart.png")
         this.load.image("heart", "Heart.png");
+        this.load.image("heart2", "Heart2.png");
         this.load.image("menuBG", "Menu Principal(1).png");
         this.load.image("hoja", "hoja.png");
         this.load.image("indicadorRecetario", "SS_indicador_recetario.png");
@@ -126,6 +127,29 @@ export class Preloader extends Phaser.Scene {
         this.load.spritesheet("nivelCarbon", "SS_Nivel de Carbon.png", { frameWidth: 40, frameHeight: 31 })
 
         this.load.on("complete", () => {
+            //CREAR SONIDOS ---------------------------------------------------
+            this.musicaCumbia1 = this.sound.add("musicaCuarteto", { loop: true, volume: .5 })
+            this.ambienteCocina = this.sound.add("ambienteCocina", { loop: true, volume: 1 })
+            this.coccionAudio = this.sound.add("coccion", { loop: true })
+            this.picarAudio = this.sound.add("picar", { loop: true })
+            this.picarListoAudio = this.sound.add("picarListo", { loop: false })
+            this.fritarAudio = this.sound.add("fritar", { loop: true })
+            this.coccionListoAudio = this.sound.add("coccionListo", { loop: false })
+            this.dashAudio = this.sound.add("dash", { loop: false })
+            this.caminarAudio = this.sound.add("caminar_pasto", { loop: false })
+            this.agarrarAudio = this.sound.add("agarrar", { loop: false })
+            this.lanzarAudio = this.sound.add("lanzar", { loop: false })
+            this.cajaAudio = this.sound.add("caja", { loop: false })
+            this.pedidoNuevoAudio = this.sound.add("pedidoNuevo", { loop: false })
+            this.pedidoEntregadoAudio = this.sound.add("pedidoEntregado", { loop: false })
+            this.dineroAudio = this.sound.add("dinero", { loop: false })
+            this.tiempoEmpiezaAudio = this.sound.add("tiempoEmpieza", { loop: false })
+            this.tiempoCriticoAudio = this.sound.add("tiempoCritico", { loop: false })
+            this.tiempoFinAudio = this.sound.add("tiempoFin", { loop: false })
+            this.golpePjAudio = this.sound.add("golpePj", { loop: false })
+            this.muerteBossAudio = this.sound.add("muerteBoss", { loop: false })
+            this.golpeBossAudio = this.sound.add("golpeBoss", { loop: false })
+            this.ambienteBossAudio = this.sound.add("ambienteBoss", { loop: false })
             this.assetsReady = true;
         });
     }

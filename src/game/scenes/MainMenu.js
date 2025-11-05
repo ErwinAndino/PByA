@@ -51,7 +51,7 @@ export class MainMenu extends Phaser.Scene {
 
         const { width, height } = this.scale;
 
-        this.registry.set("actualLevel", 1);
+        this.registry.set("actualLevel", 0);
 
         this.add.image(320, 180, "menuBG")
         this.westText = this.add.text(width / 1.2, height / 1.65, "juntar", {
@@ -171,12 +171,21 @@ export class MainMenu extends Phaser.Scene {
             console.log("SI SI SI SI")
             if (this.selector === 3) { // COOP
                 this.registry.set("mode", 1);
-                this.scene.start("Game");
+                if (this.registry.get("actualLevel") === 0) {
+                    this.scene.start("Tutorial");
+                } else {
+                    this.scene.start("Game");
+                }
+
                 this.scene.launch("HUD"); // lanzar HUD encima del Game
             }
             if (this.selector === 2) { // VERSUS
                 this.registry.set("mode", 2);
-                this.scene.start("Game");
+                if (this.registry.get("actualLevel") === 0) {
+                    this.scene.start("Tutorial");
+                } else {
+                    this.scene.start("Game");
+                }
                 this.scene.launch("HUD"); // lanzar HUD encima del Game
             }
             if (this.selector === 1) {// SCOREBOARD

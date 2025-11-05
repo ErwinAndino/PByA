@@ -8,6 +8,7 @@ export class IngredientBox extends Interactuables {
 
         super(scene, x, y, textureKey, size);
         this.scene = scene;
+        this.audio = this.scene.scene.get("Preloader");
         this.ingredientKey = ingredientKey;
         console.log(this.ingredientKey)
 
@@ -32,7 +33,7 @@ export class IngredientBox extends Interactuables {
             this.newIngredient = new Ingredientes(this.scene, player.x, player.y, this.ingredientKey)
             player.holdingSM.changeState("ingredient", { player: player, ingredient: this.newIngredient })
             this.stateMachine.changeState("anim", { box: this });
-            this.scene.cajaAudio.play({
+            this.audio.cajaAudio.play({
                 volume: 0.2, // Ajusta el volumen
                 rate: 1    // Ajusta el pitch
             });

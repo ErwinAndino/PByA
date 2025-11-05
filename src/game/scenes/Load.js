@@ -32,13 +32,13 @@ export class Load extends Phaser.Scene {
 
         const width = this.cameras.main.width;
         const height = this.cameras.main.height;
-        
+
         const sabiasQueText = this.add.text(width / 2, height / 2 - 150, "Sabías qué?", {
             fontFamily: "MyFont",
             fontSize: "22px",
             color: "#ffffff"
         }).setOrigin(0.5);
-        
+
         let arrayWierdPhrases = [
             "El primer gol olímpico de la historia fue argentino",
             "En Mendoza, hace más de 4.000 años cayó una lluvia de meteoritos gigantes",
@@ -81,10 +81,10 @@ export class Load extends Phaser.Scene {
             "La ensalada es opcional (pero necesaria para la conciencia).",
             "Ante la duda, ponele chimi."
         ]
-        
+
         const randomPhrase = arrayWierdPhrases[Math.floor(Math.random() * arrayWierdPhrases.length)];
-        
-        
+
+
         this.add.image(width, height, "hoja").setOrigin(1, 1)
 
         const randomPhraseText = this.add.text(width / 2, height / 2 - 120, randomPhrase, {
@@ -93,7 +93,7 @@ export class Load extends Phaser.Scene {
             color: "#ffffff"
         }).setOrigin(0.5);
 
-        const loaderSprite = this.add.sprite(width / 2, (height / 2)+130 , "campana").setScale(2);
+        const loaderSprite = this.add.sprite(width / 2, (height / 2) + 130, "campana").setScale(2);
         this.tweens.add({
             targets: loaderSprite,
             scale: 3,
@@ -113,7 +113,7 @@ export class Load extends Phaser.Scene {
             if (this.ready) this.startNextScene();
         });
 
-        const loadingText = this.add.text(width/2, height/2, "", {
+        const loadingText = this.add.text(width / 2, height / 2, "", {
             fontFamily: "MyFont",
             fontSize: "20px",
             color: "#ffffff"
@@ -161,5 +161,8 @@ export class Load extends Phaser.Scene {
 
     startNextScene() {
         this.scene.start(this.nextScene);
+        if (this.nextScene === "Game") {
+            this.scene.launch("HUD");
+        }
     }
 }

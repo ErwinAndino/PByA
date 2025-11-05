@@ -71,27 +71,37 @@ export class HUD extends Phaser.Scene {
         //     stroke: "#000000ff"
         // });
         this.scene.bringToTop("HUD");
+
+        if (this === "Tutorial") {
+            this.gameScene = this.scene.get("Tutorial");
+        }
+        this.audio = this.scene.get("Preloader")
+
+        this.audio.tiempoEmpiezaAudio.play({
+            volume: 0.5, // Ajusta el volumen
+            rate: 1    // Ajusta el pitch
+        });
+
+
     }
 
     onSecond() {
         this.timeLeft -= 1000;
+
         if (this.gameScene === undefined) {
             this.gameScene = this.scene.get("Game");
-            this.gameScene.tiempoEmpiezaAudio.play({
-                volume: 0.5, // Ajusta el volumen
-                rate: 1    // Ajusta el pitch
-            });
         }
+
         if (this.timeLeft < this.timeTotal * 0.2 && this.critico) {
             this.critico = false;
-            this.gameScene.tiempoCriticoAudio.play({
+            this.audio.tiempoCriticoAudio.play({
                 volume: 0.5, // Ajusta el volumen
                 rate: 1    // Ajusta el pitch
             });
             this.timerText.setColor("#d42929ff")
         }
         if (this.timeLeft === 1000) {
-            this.gameScene.tiempoFinAudio.play({
+            this.audio.tiempoFinAudio.play({
                 volume: 0.5, // Ajusta el volumen
                 rate: 1    // Ajusta el pitch
             });
@@ -141,5 +151,31 @@ export class HUD extends Phaser.Scene {
         const seconds = totalSeconds % 60;
 
         this.timerText.setText(`${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`);
+    }
+
+    resetTimer(value) {
+        console.log("Reiniciando timer a:", value);
+
+        // Detener el evento de tiempo actual
+        this.timerEvent.remove(false);
+
+        // Asignar nuevo tiempo
+        this.timeTotal = value;
+        this.timeLeft = value;
+
+        // Actualizar texto
+        if (this.timerText) {
+            this.updateTimer();
+        } else {
+            console.warn("timerText no está listo todavía");
+        }
+
+        // Crear nuevo evento
+        this.timerEvent = this.time.addEvent({
+            delay: 1000,
+            callback: this.onSecond,
+            callbackScope: this,
+            loop: true
+        });
     }
 }

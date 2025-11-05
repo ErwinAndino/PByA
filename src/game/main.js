@@ -1,5 +1,6 @@
 import { Game as MainGame } from './scenes/Game';
 import { AUTO, Scale, Game, Physics } from 'phaser';
+import { Tutorial } from './scenes/Tutorial';
 import { MainMenu } from './scenes/MainMenu';
 import { HUD } from './scenes/HUD';
 import { Victory } from './scenes/Victory';
@@ -38,6 +39,7 @@ const config = {
     scene: [
         Preloader,
         MainMenu,
+        Tutorial,
         MainGame,
         HUD,
         Victory,

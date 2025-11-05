@@ -11,8 +11,8 @@ import { LibroRecetario } from "../classes/LibroRecetario.js";
 import { Freidora } from "../classes/Freidora.js";
 
 export class Game extends Scene {
-  constructor() {
-    super("Game");
+  constructor(key = "Game") {
+    super(key);
     this.cycleText = null;
     this.currentCycle = "init";
     this.player = null;
@@ -21,6 +21,7 @@ export class Game extends Scene {
   init() {
     this.currentCycle = "init";
     this.caceria = false;
+    this.audio = this.scene.get("Preloader")
 
     this.input.once('pointerdown', () => { //esto es para evitar un warning molesto del audio
       if (this.sound.context.state === 'suspended') {
@@ -41,6 +42,146 @@ export class Game extends Scene {
   create() {
     this.currentCycle = "create";
 
+    this.createAtlas();
+    this.createLevel();
+    this.createInputs();
+    this.createLayout();
+
+    //MUSICA ---------------------------------------------------
+    this.audio.musicaCumbia1.play()
+    this.audio.ambienteCocina.play()
+
+    console.log(this.Interactuables)
+    this.spawnPedidos();
+    this.spawnPedidos();
+    this.time.addEvent({
+      delay: 5000,
+      callback: () => {
+        this.spawnPedidos();
+      },
+      loop: true
+    });
+
+
+    //Cursors
+    this.victoryKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.N);
+    this.CaceriaKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B);
+    this.recetarioKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+  }
+
+  update(t, dt) {
+    this.currentCycle = "update";
+    // console.log("FR: ", dt/1000)
+
+    this.nearestBox = this._getClosestBox(this.player)
+    this.nearestBox2 = this._getClosestBox(this.player2)
+
+    if (this.player) this.player.update(dt);
+    if (this.player2) this.player2.update(dt);
+    this.Interactuables.forEach(box => { //updatea todas las cajas
+      box.update(dt);
+    });
+
+    //PLAYER 1 ----------------------------------------------------------------------------
+    if (this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player1")) {
+      if (this.nearestBox.activeBox) {
+        this.nearestBox.onInteract(this.player)
+        console.log(`Se presionó tecla de accion en: ${this.nearestBox}`)
+      } else {
+        if (this.player.holdingItem) {
+          this.player.holdingSM.changeState("none", { player: this.player })
+
+        } else {
+          console.log("Nothing at hand")
+        }
+      }
+    }
+
+    if (this.inputSystem.isJustPressed(INPUT_ACTIONS.EAST, "player1") && this.player.holdingItem) {
+      const itemToThrow = this.player.itemHolded;
+      this.player.holdingSM.changeState("none", { player: this.player });
+
+      const speed = 600;
+      itemToThrow.thrownBy = 1;
+      itemToThrow.body.setVelocity(this.player.lastDirection.x * speed, this.player.lastDirection.y * speed);
+      this.audio.lanzarAudio.play({
+        volume: .4,
+        rate: 1
+      })
+    }
+
+    if (this.inputSystem.isJustPressed(INPUT_ACTIONS.SOUTH, "player1")) {
+      this.player.dash()
+    }
+    //PLAYER 2 ----------------------------------------------------------------------------
+    if (this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player2")) {
+      if (this.nearestBox2.activeBox2) {
+        this.nearestBox2.onInteract(this.player2)
+        console.log("Action key pressed!")
+      } else {
+        if (this.player2.holdingItem) {
+          this.player2.holdingSM.changeState("none", { player: this.player2 })
+
+        } else {
+          console.log("Nothing at hand")
+        }
+      }
+    }
+
+    if (this.inputSystem.isJustPressed(INPUT_ACTIONS.EAST, "player2") && this.player2.holdingItem) {
+      const itemToThrow = this.player2.itemHolded;
+      this.player2.holdingSM.changeState("none", { player: this.player2 });
+
+      const speed = 600;
+      itemToThrow.thrownBy = 1;
+      itemToThrow.body.setVelocity(this.player2.lastDirection.x * speed, this.player2.lastDirection.y * speed);
+    }
+
+    if (this.inputSystem.isJustPressed(INPUT_ACTIONS.SOUTH, "player2")) {
+      this.player2.dash()
+    }
+
+    if (Phaser.Input.Keyboard.JustDown(this.victoryKey)) {
+      this.finishLevel();
+    }
+    if (Phaser.Input.Keyboard.JustDown(this.recetarioKey)) {
+      this.recetario.onInput()
+    }
+    if (Phaser.Input.Keyboard.JustDown(this.CaceriaKey)) {
+      this.registry.set("actualLevel", this.actualLevel + 1)
+      this.sound.stopAll();
+      this.scene.stop("HUD");
+      this.cameras.main.fadeOut(400);
+      this.cameras.main.once("camerafadeoutcomplete", () => {
+        this.scene.start("Load", { nextScene: "Caceria" });
+      });
+    }
+
+    if (this.playersTouching) {
+      console.log("tocandose");
+      if (this.player.isDashing) {
+        this._pushPlayers(this.player, this.player2);
+      }
+      if (this.player2.isDashing) {
+        this._pushPlayers(this.player2, this.player);
+      }
+      this.playersTouching = false; // reset para la siguiente frame
+
+      if (this.player.isDashing) {
+        if (this.player2 && this.player2.holdingItem) {
+          this.player2.holdingSM.changeState("none", { player: this.player2 })
+        }
+      }
+      if (this.player2.isDashing) {
+        if (this.player && this.player.holdingItem) {
+          this.player.holdingSM.changeState("none", { player: this.player })
+        }
+      }
+
+    }
+  }
+
+  createAtlas() {
     //INDICES ATLAS---------------------------------------------------------
     this.ingredientesAtlas = {
       //POLLO---------
@@ -290,7 +431,10 @@ export class Game extends Scene {
         }
       },
     }
+  }
 
+  createLevel() {
+    this.nivel0 = { pedidosDispo: ["polloAsado_2", "bife_2", "achicoriaPicada_0"], ingreNecesarios: ["polloCrudo_0", "bifeCrudo_0", "achicoriaCruda_0"] }
     this.nivel1 = { pedidosDispo: ["polloAsado_2", "bife_2", "achicoriaPicada_0"], ingreNecesarios: ["polloCrudo_0", "bifeCrudo_0", "achicoriaCruda_0"] }
     this.nivel2 = { pedidosDispo: ["polloAsado_2", "bife_2", "achicoriaPicada_0", "papaAsada_0", "papaCortada_1"], ingreNecesarios: ["polloCrudo_0", "bifeCrudo_0", "achicoriaCruda_0", "papaCruda_0"] }
     this.nivel3 = { pedidosDispo: ["polloAsado_2", "bife_2", "achicoriaPicada_0", "papaAsada_0", "papaCortada_1", "lomo_2", "chorizo_2"], ingreNecesarios: ["polloCrudo_0", "bifeCrudo_0", "achicoriaCruda_0", "papaCruda_0", "lomoCrudo_0", "chorizoCrudo_0"] }
@@ -298,7 +442,10 @@ export class Game extends Scene {
     this.nivel5 = { pedidosDispo: ["polloAsado_2", "bife_2", "achicoriaPicada_0", "papaAsada_0", "papaCortada_1", "lomo_0", "chorizo_2", "pancho", "sanBife_0", "milaPollo_1", "milaCarne_1"], ingreNecesarios: ["polloCrudo_0", "bifeCrudo_0", "achicoriaCruda_0", "papaCruda_0", "lomoCrudo_0", "chorizoCrudo_0", "panCrudo_0"] }
     this.nivel6 = { pedidosDispo: ["polloAsado_2", "bife_2", "achicoriaPicada_0", "papaAsada_0", "papaCortada_1", "lomo_0", "chorizo_2", "pancho", "sanBife_0", "milaPollo_1", "milaCarne_1", "sanMila_0", "sanMilaCarne_0"], ingreNecesarios: ["polloCrudo_0", "bifeCrudo_0", "achicoriaCruda_0", "papaCruda_0", "lomoCrudo_0", "chorizoCrudo_0", "panCrudo_0"] }
     this.nivel7 = { pedidosDispo: ["polloAsado_2", "bife_2", "achicoriaPicada_0", "papaAsada_0", "papaCortada_1", "lomo_0", "chorizo_2", "pancho", "sanBife_0", "milaPollo_1", "milaCarne_1", "sanMila_0", "sanMilaCarne_0", "empaPollo_2", "empaCarne_2"], ingreNecesarios: ["polloCrudo_0", "bifeCrudo_0", "achicoriaCruda_0", "papaCruda_0", "lomoCrudo_0", "chorizoCrudo_0", "panCrudo_0", "tapaEmpanada_0"] }
-    if (this.actualLevel === 1) {
+    if (this.actualLevel === 0) {
+      this.pedidosDisponibles = this.nivel0.pedidosDispo
+      this.ingredientesNecesarios = this.nivel0.ingreNecesarios
+    } else if (this.actualLevel === 1) {
       this.pedidosDisponibles = this.nivel1.pedidosDispo
       this.ingredientesNecesarios = this.nivel1.ingreNecesarios
     } else if (this.actualLevel === 2) {
@@ -322,32 +469,10 @@ export class Game extends Scene {
     }
 
     this.randomIndexIngredientesNecesarios = Math.floor(Math.random() * this.ingredientesNecesarios.length)
-    //CREAR SONIDOS ---------------------------------------------------
-    this.musicaCumbia1 = this.sound.add("musicaCuarteto", { loop: true, volume: .5 }).play()
-    this.ambienteCocina = this.sound.add("ambienteCocina", { loop: true, volume: 1 }).play()
-    this.coccionAudio = this.sound.add("coccion", { loop: true })
-    this.picarAudio = this.sound.add("picar", { loop: true })
-    this.picarListoAudio = this.sound.add("picarListo", { loop: false })
-    this.fritarAudio = this.sound.add("fritar", { loop: true })
-    this.coccionListoAudio = this.sound.add("coccionListo", { loop: false })
-    this.dashAudio = this.sound.add("dash", { loop: false })
-    this.caminarAudio = this.sound.add("caminar_pasto", { loop: false })
-    this.agarrarAudio = this.sound.add("agarrar", { loop: false })
-    this.lanzarAudio = this.sound.add("lanzar", { loop: false })
-    this.cajaAudio = this.sound.add("caja", { loop: false })
-    this.pedidoNuevoAudio = this.sound.add("pedidoNuevo", { loop: false })
-    this.pedidoEntregadoAudio = this.sound.add("pedidoEntregado", { loop: false })
-    this.dineroAudio = this.sound.add("dinero", { loop: false })
-    this.tiempoEmpiezaAudio = this.sound.add("tiempoEmpieza", { loop: false })
-    this.tiempoCriticoAudio = this.sound.add("tiempoCritico", { loop: false })
-    this.tiempoFinAudio = this.sound.add("tiempoFin", { loop: false })
-    this.golpePjAudio = this.sound.add("golpePj", { loop: false })
-    this.muerteBossAudio = this.sound.add("muerteBoss", { loop: false })
-    this.golpeBossAudio = this.sound.add("golpeBoss", { loop: false })
-    this.ambienteBossAudio = this.sound.add("ambienteBoss", { loop: false })
 
+  }
 
-
+  createInputs() {
     //MANEJO DE INPUTS ---------------------------------------------------
     this.inputSystem = new InputSystem(this.input);
     this.inputSystem.configureKeyboard({
@@ -369,6 +494,9 @@ export class Game extends Scene {
       [INPUT_ACTIONS.WEST]: [Phaser.Input.Keyboard.KeyCodes.J]
     }, "player2");
 
+  }
+
+  createLayout() {
     //FONDO Y PJ ---------------------------------------------------------
     this.add.image(320, 180, "background");
     this.add.image(565, 195, "cenizas");
@@ -462,136 +590,6 @@ export class Game extends Scene {
     this.physics.add.collider(this.player2, brasero);
     this.Interactuables.push(brasero);
 
-
-    console.log(this.Interactuables)
-    this.spawnPedidos();
-    this.spawnPedidos();
-    this.time.addEvent({
-      delay: 5000,
-      callback: () => {
-        this.spawnPedidos();
-      },
-      loop: true
-    });
-
-
-    //Cursors
-    this.victoryKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.N);
-
-    this.CaceriaKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B);
-    this.recetarioKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
-  }
-
-  update(t, dt) {
-    this.currentCycle = "update";
-    // console.log("FR: ", dt/1000)
-
-    this.nearestBox = this._getClosestBox(this.player)
-    this.nearestBox2 = this._getClosestBox(this.player2)
-
-    if (this.player) this.player.update(dt);
-    if (this.player2) this.player2.update(dt);
-    this.Interactuables.forEach(box => { //updatea todas las cajas
-      box.update(dt);
-    });
-
-    //PLAYER 1 ----------------------------------------------------------------------------
-    if (this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player1")) {
-      if (this.nearestBox.activeBox) {
-        this.nearestBox.onInteract(this.player)
-        console.log(`Se presionó tecla de accion en: ${this.nearestBox}`)
-      } else {
-        if (this.player.holdingItem) {
-          this.player.holdingSM.changeState("none", { player: this.player })
-
-        } else {
-          console.log("Nothing at hand")
-        }
-      }
-    }
-
-    if (this.inputSystem.isJustPressed(INPUT_ACTIONS.EAST, "player1") && this.player.holdingItem) {
-      const itemToThrow = this.player.itemHolded;
-      this.player.holdingSM.changeState("none", { player: this.player });
-
-      const speed = 600;
-      itemToThrow.thrownBy = 1;
-      itemToThrow.body.setVelocity(this.player.lastDirection.x * speed, this.player.lastDirection.y * speed);
-      this.lanzarAudio.play({
-        volume: .4,
-        rate: 1
-      })
-    }
-
-    if (this.inputSystem.isJustPressed(INPUT_ACTIONS.SOUTH, "player1")) {
-      this.player.dash()
-    }
-    //PLAYER 2 ----------------------------------------------------------------------------
-    if (this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player2")) {
-      if (this.nearestBox2.activeBox2) {
-        this.nearestBox2.onInteract(this.player2)
-        console.log("Action key pressed!")
-      } else {
-        if (this.player2.holdingItem) {
-          this.player2.holdingSM.changeState("none", { player: this.player2 })
-
-        } else {
-          console.log("Nothing at hand")
-        }
-      }
-    }
-
-    if (this.inputSystem.isJustPressed(INPUT_ACTIONS.EAST, "player2") && this.player2.holdingItem) {
-      const itemToThrow = this.player2.itemHolded;
-      this.player2.holdingSM.changeState("none", { player: this.player2 });
-
-      const speed = 600;
-      itemToThrow.thrownBy = 1;
-      itemToThrow.body.setVelocity(this.player2.lastDirection.x * speed, this.player2.lastDirection.y * speed);
-    }
-
-    if (this.inputSystem.isJustPressed(INPUT_ACTIONS.SOUTH, "player2")) {
-      this.player2.dash()
-    }
-
-    if (Phaser.Input.Keyboard.JustDown(this.victoryKey)) {
-      this.finishLevel();
-    }
-    if (Phaser.Input.Keyboard.JustDown(this.recetarioKey)) {
-      this.recetario.onInput()
-    }
-    if (Phaser.Input.Keyboard.JustDown(this.CaceriaKey)) {
-      this.registry.set("actualLevel", this.actualLevel + 1)
-      this.sound.stopAll();
-      this.scene.stop("HUD");
-      this.cameras.main.fadeOut(400);
-      this.cameras.main.once("camerafadeoutcomplete", () => {
-        this.scene.start("Load", { nextScene: "Caceria" });
-      });
-    }
-
-    if (this.playersTouching) {
-      console.log("tocandose");
-      if (this.player.isDashing) {
-        this._pushPlayers(this.player, this.player2);
-      }
-      if (this.player2.isDashing) {
-        this._pushPlayers(this.player2, this.player);
-      }
-      this.playersTouching = false; // reset para la siguiente frame
-
-      if (this.player.isDashing) {
-        if (this.player2 && this.player2.holdingItem) {
-          this.player2.holdingSM.changeState("none", { player: this.player2 })
-        }
-      }
-      if (this.player2.isDashing) {
-        if (this.player && this.player.holdingItem) {
-          this.player.holdingSM.changeState("none", { player: this.player })
-        }
-      }
-
-    }
   }
 
   _getClosestBox(player) {
@@ -683,7 +681,7 @@ export class Game extends Scene {
 
   }
 
-  spawnPedidos() {
+  spawnPedidos(ingredients, duration) {
     // busca una posición libre
     let y = this.posicionesPedidos.find(
       pos => !this.Interactuables.some(p => p.y === pos && p.availableIngredients)
@@ -695,11 +693,11 @@ export class Game extends Scene {
         hud.addPedidosEnCola(1);
       }
     } else {
-      let pedido = new Task(this, 40, y, this.pedidosDisponibles);
+      let pedido = new Task(this, 40, y, this.pedidosDisponibles, 48, "orden", ingredients, duration);
       this.physics.add.collider(this.player, pedido);
       this.physics.add.collider(this.player2, pedido);
       this.Interactuables.push(pedido);
-      this.pedidoNuevoAudio.play({
+      this.audio.pedidoNuevoAudio.play({
         volume: 0.2, // Ajusta el volumen
         rate: 1    // Ajusta el pitch
       });

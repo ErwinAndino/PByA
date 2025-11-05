@@ -22,6 +22,7 @@ export class Caceria extends Phaser.Scene {
 
   create() {
     this.gameScene = this.scene.get("Game");
+    this.audio = this.scene.get("Preloader");
     const { width, height } = this.scale;
     this.scene.bringToTop();
 
@@ -108,7 +109,7 @@ export class Caceria extends Phaser.Scene {
         .setScale(2);
       this.heartsP2.push(heart);
     }
-    this.gameScene.ambienteBossAudio.play({
+    this.audio.ambienteBossAudio.play({
       volume: 0.3, // Ajusta el volumen
       rate: 1    // Ajusta el pitch
     });
@@ -124,7 +125,7 @@ export class Caceria extends Phaser.Scene {
       this.player1Lives--;
       this._updateHearts(1);
       console.log(`Player 1 recibió daño (${this.player1Lives}/3)`);
-      this.gameScene.golpeBossAudio.play({
+      this.audio.golpeBossAudio.play({
         volume: 0.3, // Ajusta el volumen
         rate: Phaser.Math.FloatBetween(1.2, .8)    // Ajusta el pitch
       });
@@ -134,7 +135,7 @@ export class Caceria extends Phaser.Scene {
       this.player2Lives--;
       this._updateHearts(2);
       console.log(`Player 2 recibió daño (${this.player2Lives}/3)`);
-      this.gameScene.golpeBossAudio.play({
+      this.audio.golpeBossAudio.play({
         volume: 0.3, // Ajusta el volumen
         rate: Phaser.Math.FloatBetween(1.2, .8)    // Ajusta el pitch
       });

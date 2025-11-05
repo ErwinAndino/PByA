@@ -1,7 +1,8 @@
 export class Recetario extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, lvl, frame = 0){
+    constructor(scene, x, y, lvl, frame = 0) {
         let texture = "";
-        if (lvl === 1) texture = "recetario1";
+        if (lvl === 0) texture = "recetario4";
+        else if (lvl === 1) texture = "recetario1";
         else if (lvl === 2) texture = "recetario2";
         else if (lvl === 3) texture = "recetario3";
         else if (lvl === 4) texture = "recetario4";
@@ -10,7 +11,7 @@ export class Recetario extends Phaser.GameObjects.Sprite {
         else if (lvl >= 7) texture = "recetario7";
 
         super(scene, x, y, texture, frame);
-        
+
         this.scene = scene;
         this.textureKey = texture;
         this.opened = false;
@@ -29,18 +30,18 @@ export class Recetario extends Phaser.GameObjects.Sprite {
         this.scene.add.existing(this);
 
     }
-    
-    onInput(){
+
+    onInput() {
         if (this.isAnimating) return;
 
-        if(!this.opened){
+        if (!this.opened) {
             this.open()
         } else {
             this.nextPage();
         }
     }
 
-    open(){
+    open() {
         this.isAnimating = true;
 
         this.scene.tweens.add({
@@ -56,8 +57,8 @@ export class Recetario extends Phaser.GameObjects.Sprite {
         })
     }
 
-    close(){
-        if(!this.opened || this.isAnimating) return;
+    close() {
+        if (!this.opened || this.isAnimating) return;
 
         this.isAnimating = true;
         this.clearCloseTimer();
@@ -74,8 +75,8 @@ export class Recetario extends Phaser.GameObjects.Sprite {
         });
     }
 
-    nextPage(){
-        this.indice = (this.indice +1) % this.totalFrames;
+    nextPage() {
+        this.indice = (this.indice + 1) % this.totalFrames;
         this.setFrame(this.indice);
 
         this.resetCloseTimer();
@@ -89,19 +90,19 @@ export class Recetario extends Phaser.GameObjects.Sprite {
         });
     }
 
-    startCloseTimer(){
+    startCloseTimer() {
         this.clearCloseTimer();
-        this.timer = this.scene.time.delayedCall(4000, ()=> {
+        this.timer = this.scene.time.delayedCall(4000, () => {
             this.close();
         })
     }
 
-    resetCloseTimer(){
+    resetCloseTimer() {
         this.startCloseTimer();
     }
 
-    clearCloseTimer(){
-        if(this.timer){
+    clearCloseTimer() {
+        if (this.timer) {
             this.timer.remove(false);
             this.timer = null;
         }
