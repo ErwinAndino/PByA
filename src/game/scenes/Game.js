@@ -67,6 +67,7 @@ export class Game extends Scene {
     this.victoryKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.N);
     this.CaceriaKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B);
     this.recetarioKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+    this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
   }
 
   update(t, dt) {
@@ -141,6 +142,12 @@ export class Game extends Scene {
       this.player2.dash()
     }
 
+    if (Phaser.Input.Keyboard.JustDown(this.escKey)) {
+      if (!this.scene.isActive("PauseMenu")) {
+        // pausa el juego y lanza el menú
+        this.scene.launch("PauseMenu", { from: this.scene.key });
+      }
+    }
     if (Phaser.Input.Keyboard.JustDown(this.victoryKey)) {
       this.finishLevel();
     }
@@ -710,4 +717,6 @@ export class Game extends Scene {
       this.scene.get("HUD").subsPedidosEnCola(1);
     }
   }
+
+
 }

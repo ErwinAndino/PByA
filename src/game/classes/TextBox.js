@@ -124,4 +124,16 @@ export default class TextBox extends Phaser.GameObjects.Container {
         super.setVisible(visible);
         this.list.forEach(obj => obj.setVisible(visible));
     }
+
+    pause() {
+        if (this.typingEvent && !this.typingEvent.paused) {
+            this.typingEvent.paused = true;
+        }
+    }
+
+    resume() {
+        if (this.typingEvent && this.typingEvent.paused) {
+            this.typingEvent.paused = false;
+        }
+    }
 }

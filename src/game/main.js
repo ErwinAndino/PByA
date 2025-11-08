@@ -7,6 +7,7 @@ import { Victory } from './scenes/Victory';
 import { Caceria } from './scenes/Caceria';
 import { Preloader } from './scenes/Preloader';
 import { Load } from './scenes/Load';
+import { PauseMenu } from './scenes/PauseMenu';
 
 // Find out more information about the Game Config at:
 // https://docs.phaser.io/api-documentation/typedef/types-core#gameconfig
@@ -42,6 +43,7 @@ const config = {
         Tutorial,
         MainGame,
         HUD,
+        PauseMenu,
         Victory,
         Caceria,
         Load

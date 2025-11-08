@@ -68,6 +68,8 @@ export class Caceria extends Phaser.Scene {
       [INPUT_ACTIONS.WEST]: [Phaser.Input.Keyboard.KeyCodes.J]
     }, "player2");
 
+    this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+
     this.add.image(320, 180, "backgroundCaceria");
     // this.nightOverlay = this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0x000033, 0.6)
     //   .setOrigin(0)
@@ -183,6 +185,12 @@ export class Caceria extends Phaser.Scene {
       this.boss.update(dt);
     }
 
+    if (Phaser.Input.Keyboard.JustDown(this.escKey)) {
+      if (!this.scene.isActive("PauseMenu")) {
+        // pausa el juego y lanza el menú
+        this.scene.launch("PauseMenu", { from: this.scene.key });
+      }
+    }
     //PLAYER 1 ----------------------------------------------------------------------------
     if (this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player1")) {
       console.log("attack p1")

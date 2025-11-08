@@ -30,6 +30,7 @@ export class Tutorial extends Game {
         this.CaceriaKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B);
         this.recetarioKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
         this.nextKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.T);
+        this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
 
         this.add.text(100, 150, "Soy el nivel tutorial", { fontSize: "20px", color: "#401be2ff" });
 
