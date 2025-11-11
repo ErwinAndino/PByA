@@ -1,6 +1,11 @@
+import keys from "../../utils/enums/keys";
+import { getTranslations, getPhrase } from "../../utils/Translations";
 export class HUD extends Phaser.Scene {
     constructor() {
         super("HUD");
+        const { money } = keys.sceneGame;
+        this.money = money;
+
     }
 
     create() {
@@ -11,7 +16,7 @@ export class HUD extends Phaser.Scene {
             if (!this.registry.has("coopPoints")) {
                 this.registry.set("coopPoints", 0)
             }
-            this.pointsText = this.add.text(width - 100, 20, `Puntos: ${this.registry.get("coopPoints")}`, {
+            this.pointsText = this.add.text(width - 100, 20, getPhrase(this.money) + ": " + this.registry.get("coopPoints"), {
                 fontFamily: "MyFont",
                 fontSize: "25px",
                 color: "#ffffffff",
@@ -25,19 +30,19 @@ export class HUD extends Phaser.Scene {
             if (!this.registry.has("vsPoints2")) {
                 this.registry.set("vsPoints2", 0)
             }
-            this.pointsText1 = this.add.text(width - 100, 20, `Puntos P1: ${this.registry.get("vsPoints1")}`, {
+            this.pointsText1 = this.add.text(width - 100, 20, getPhrase(this.money) + " P1: " + this.registry.get("vsPoints1"), {
                 fontFamily: "MyFont",
                 fontSize: "25px",
                 color: "#E3C0A1",
                 strokeThickness: 2,
-                stroke: "#000000ff"
+                stroke: "#59493F"
             }).setOrigin(.5);
-            this.pointsText2 = this.add.text(width - 100, 40, `Puntos P2: ${this.registry.get("vsPoints2")}`, {
+            this.pointsText2 = this.add.text(width - 100, 40, getPhrase(this.money) + " P2: " + this.registry.get("vsPoints2"), {
                 fontFamily: "MyFont",
                 fontSize: "25px",
                 color: "#59493F",
                 strokeThickness: 2,
-                stroke: "#000000ff"
+                stroke: "#E3C0A1"
             }).setOrigin(.5);
         }
         this.timeTotal = 240000;
@@ -126,12 +131,12 @@ export class HUD extends Phaser.Scene {
     updatePoints() {
         if (this.currentMode === 1) {
             if (this.pointsText) {
-                this.pointsText.setText(`Puntos: ${this.registry.get("coopPoints")}`)
+                this.pointsText.setText(getPhrase(this.money) + ": " + this.registry.get("coopPoints"))
             }
         } else if (this.currentMode === 2) {
             if (this.pointsText1 && this.pointsText2) {
-                this.pointsText1.setText(`Puntos P1: ${this.registry.get("vsPoints1")}`)
-                this.pointsText2.setText(`Puntos P2: ${this.registry.get("vsPoints2")}`)
+                this.pointsText1.setText(getPhrase(this.money) + " P1: " + this.registry.get("vsPoints1"))
+                this.pointsText2.setText(getPhrase(this.money) + " P2: " + this.registry.get("vsPoints2"))
             }
         }
     }

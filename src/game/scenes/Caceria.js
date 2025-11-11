@@ -1,10 +1,14 @@
 import InputSystem, { INPUT_ACTIONS } from "../../utils/InputSystem";
 import { Boss } from "../classes/Boss";
 import { Player } from "../classes/Player";
+import { getPhrase } from "../../utils/Translations";
+import keys from "../../utils/enums/keys";
 
 export class Caceria extends Phaser.Scene {
   constructor() {
     super("Caceria");
+    const { money, failedToCook, allRecepiesCooked, failedToDodge, bothLose, oneLoses, jugador } = keys.sceneGame;
+    this.failedToDodge = failedToDodge;
   }
 
   init(data) {
@@ -172,7 +176,7 @@ export class Caceria extends Phaser.Scene {
         // Esperar 2 segundos y volver al menú
         this.time.delayedCall(2000, () => {
           this.sound.stopAll();
-          this.scene.start("Victory", { reason: "La criatura destruyó la parrilla", empate: false, completado: false, boss: true }); // <-- Cambiá por el nombre real de tu escena de menú
+          this.scene.start("Victory", { reason: getPhrase(this.failedToDodge), empate: false, completado: false, boss: true }); // <-- Cambiá por el nombre real de tu escena de menú
         });
       }
     }

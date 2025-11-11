@@ -1,7 +1,14 @@
 import InputSystem, { INPUT_ACTIONS } from "../../utils/InputSystem";
+import { getPhrase } from "../../utils/Translations";
+import keys from "../../utils/enums/keys";
 export class PauseMenu extends Phaser.Scene {
     constructor() {
         super("PauseMenu");
+        const { pause, resume, skipTutorial, mainMenu } = keys.scenePauseMenu
+        this.pause = pause;
+        this.resume = resume;
+        this.skipTutorial = skipTutorial;
+        this.mainMenu = mainMenu;
     }
     init(data) {
 
@@ -39,22 +46,36 @@ export class PauseMenu extends Phaser.Scene {
         this.game.cameras.main.setAlpha(0.5);
 
         // texto principal
-        this.add.text(width / 2, height / 2 - 50, "PAUSA", {
+        this.add.text(width / 2, height / 4, getPhrase(this.pause), {
             fontFamily: "MyFont",
             fontSize: "48px",
             color: "#ffffff",
         }).setOrigin(0.5);
 
         // botón reanudar
-        this.resumeText = this.add.text(width / 2, height / 2 + 20, "Reanudar", {
+        this.resumeText = this.add.text(width / 2, height / 2, getPhrase(this.resume), {
             fontFamily: "MyFont",
             fontSize: "32px",
             color: "#ffffff",
         }).setOrigin(0.5);
 
+        let exitPosition = height / 1.6;
+
+        if (this.sceneKey === "Tutorial") {
+            // skip tutorial
+            this.skipTutorialText = this.add.text(width / 2, height / 1.6, getPhrase(this.skipTutorial), {
+                fontFamily: "MyFont",
+                fontSize: "32px",
+                color: "#ffffff",
+            }).setOrigin(0.5);
+
+            exitPosition = height / 1.3
+        }
+
+
 
         // botón salir al menú principal (opcional)
-        this.exitText = this.add.text(width / 2, height / 2 + 80, "Salir al menú", {
+        this.exitText = this.add.text(width / 2, exitPosition, getPhrase(this.mainMenu), {
             fontFamily: "MyFont",
             fontSize: "28px",
             color: "#ffffff",
@@ -65,12 +86,19 @@ export class PauseMenu extends Phaser.Scene {
             this.resumeGame();
         });
         this.selector = 1
+        if (this.sceneKey === "Tutorial") this.selector = 2
+
         this.highlightText();
     }
     update() {
         if (this.inputSystem.isJustPressed(INPUT_ACTIONS.UP, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.UP, "player2")) {
             console.log("PA RRIBA")
-            this.selector = Math.min(1, this.selector + 1)
+            if (this.sceneKey === "Tutorial") {
+                this.selector = Math.min(2, this.selector + 1)
+            } else {
+                this.selector = Math.min(1, this.selector + 1)
+            }
+
             this.highlightText()
         }
         if (this.inputSystem.isJustPressed(INPUT_ACTIONS.DOWN, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.DOWN, "player2")) {
@@ -80,9 +108,19 @@ export class PauseMenu extends Phaser.Scene {
 
         }
         if (this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player2")) {
-            if (this.selector === 1) {// RESUME
-                this.resumeGame();
+            if (this.sceneKey === "Tutorial") {
+                if (this.selector === 2) {// RESUME
+                    this.resumeGame();
+                } if (this.selector === 1) {// SKIP TUTORIAL
+                    this.finishLevel();
+                }
+            } else {
+                if (this.selector === 1) {// RESUME
+                    this.resumeGame();
+                }
             }
+
+
             if (this.selector === 0) { // EXIT
                 this.exitToMenu();
             }
@@ -90,9 +128,15 @@ export class PauseMenu extends Phaser.Scene {
     }
     highlightText() {
         this.resumeText.setColor("#fff");
+        if (this.sceneKey === "Tutorial") this.skipTutorialText.setColor("#fff");
         this.exitText.setColor("#fff");
         let text = null;
-        if (this.selector === 1) text = this.resumeText;
+        if (this.sceneKey === "Tutorial") {
+            if (this.selector === 2) text = this.resumeText;
+            if (this.selector === 1) text = this.skipTutorialText;
+        } else {
+            if (this.selector === 1) text = this.resumeText;
+        }
         if (this.selector === 0) text = this.exitText;
         text.setColor("#2ed12eff");
     }
@@ -120,6 +164,18 @@ export class PauseMenu extends Phaser.Scene {
         this.scene.stop(this.sceneKey); // detiene la escena de juego
         this.scene.stop("HUD");
         this.scene.start("MainMenu"); // va al menú principal
+    }
+    finishLevel() {
+        this.sound.stopAll();
+        this.scene.stop("HUD");
+        this.cameras.main.fadeOut(500, 0, 0, 0);
+
+        this.registry.set("actualLevel", 1)
+        console.log(this.registry.get("actualLevel"))
+        this.cameras.main.once("camerafadeoutcomplete", () => {
+            this.scene.stop(this.sceneKey); // detiene la escena de juego
+            this.scene.start("Load", { nextScene: "Game" });
+        });
     }
 
 }

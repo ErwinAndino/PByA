@@ -1,4 +1,5 @@
-
+import { getTranslations, getPhrase } from "../../utils/Translations";
+import keys from "../../utils/enums/keys";
 
 export class Preloader extends Phaser.Scene {
     constructor() {
@@ -6,6 +7,8 @@ export class Preloader extends Phaser.Scene {
         this.fontReady = false;
         this.ready = false;
         this.timerReady = false;
+        const { symbol, } = keys.scenePreloader;
+        this.symbol = symbol
     }
 
     preload() {
@@ -17,11 +20,7 @@ export class Preloader extends Phaser.Scene {
 
         // Paso 1: cargar solo el ícono de carga
         this.load.image("campana", "SS_Campanilla.png");
-        this.add.text(width / 2, height / 1.35, "Este símbolo significa que está cargando!", {
-            fontFamily: "MyFont",
-            fontSize: "22px",
-            color: "#ffffff"
-        }).setOrigin(0.5);
+
 
         this.load.once("complete", () => {
             // Mostrar sprite animado
@@ -34,6 +33,12 @@ export class Preloader extends Phaser.Scene {
                 repeat: -1,
                 ease: "Sine.easeInOut"
             });
+
+            this.symbolText = this.add.text(width / 2, height / 1.35, getPhrase(this.symbol), {
+                fontFamily: "MyFont",
+                fontSize: "22px",
+                color: "#ffffff"
+            }).setOrigin(0.5);
 
             this.time.delayedCall(1000, () => {
                 this.timerReady = true;

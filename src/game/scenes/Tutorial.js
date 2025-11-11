@@ -1,11 +1,19 @@
 import { Game } from '../scenes/Game';
 import TextBox from "../classes/TextBox";
+import { getPhrase } from "../../utils/Translations";
+import keys from "../../utils/enums/keys";
 export class Tutorial extends Game {
     constructor() {
         super("Tutorial");
+        const { N0_1, N0_2, N0_3, N0_4, N0_5, N0_6, N1_1, N1_2, N1_3, N1_4, N1_5, N1_6, N1_7, N1_8, N2_1, N3_1, N3_2, N3_3, N3_4, N3_5, N3_6, N3_7, N4_1, N4_2 } = keys.sceneTutorial;
         this.cycleText = null;
         this.currentCycle = "init";
         this.player = null;
+        this.dialog0 = [N0_1, N0_2, N0_3, N0_4, N0_5, N0_6]
+        this.dialog1 = [N1_1, N1_2, N1_3, N1_4, N1_5, N1_6, N1_7, N1_8]
+        this.dialog2 = [N2_1]
+        this.dialog3 = [N3_1, N3_2, N3_3, N3_4, N3_5, N3_6, N3_7]
+        this.dialog4 = [N4_1, N4_2]
 
     }
     create() {
@@ -14,10 +22,19 @@ export class Tutorial extends Game {
         this.pedidosDisponibles = ["polloAsado_2", "bife_2", "achicoriaPicada_0", "sanBife_0"]
         this.ingredientesNecesarios = ["polloCrudo_0", "bifeCrudo_0", "achicoriaCruda_0", "panCrudo_0"]
         this.createInputs();
+        this.customLayout = [
+            { x: 350, y: 300 },
+            { x: 400, y: 300 },
+            { x: 450, y: 300 },
+            { x: 500, y: 300 },
+        ];
         this.createLayout();
 
-
-
+        this.translatedDialog0 = this.dialog0.map(getPhrase);
+        this.translatedDialog1 = this.dialog1.map(getPhrase);
+        this.translatedDialog2 = this.dialog2.map(getPhrase);
+        this.translatedDialog3 = this.dialog3.map(getPhrase);
+        this.translatedDialog4 = this.dialog4.map(getPhrase);
 
         this.pelado = this.physics.add.image(200, 80, "heart2").setScale(0.3);
         this.pelado.body.pushable = false;
@@ -27,25 +44,16 @@ export class Tutorial extends Game {
 
         //Cursors
         this.victoryKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.N);
+        this.defeatKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
         this.CaceriaKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B);
         this.recetarioKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
         this.nextKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.T);
         this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
 
-        this.add.text(100, 150, "Soy el nivel tutorial", { fontSize: "20px", color: "#401be2ff" });
-
-        this.textBox = new TextBox(this, 380, 70, 250, 80, this.pelado);
-        this.textBox.showSequence([
-            "Ey wachos demen bola que no tengo ganas de explicar esto devuelta",
-            "ya saben, si quieren mantener el laburo cocinen lo que les piden los clientes",
-            "las ordenes llegan aca a la izquierda y les dicen que porqueria tienen que cocinar",
-            "si tardan demasiado se me van los clientes y se los voy a descontar a los dos",
-            "ayudense o no, no me importa, solo etreguen los pedidos antes que se acabe el dia",
-            "ahora piquen una achicoria en la tabla de la mesa para hacer una ensalada y entreguenla."
-        ], 35);
+        this.textBox = new TextBox(this, 365, 70, 250, 80, this.pelado);
+        this.textBox.showSequence(this.translatedDialog0, 35);
 
         this.textBox.once("dialogComplete", () => {
-            console.log("Fin del diálogo");
             this.spawnPedidos(["achicoriaPicada_0"], 600000);
         });
         this.tutorialProgress = 0;
@@ -58,7 +66,7 @@ export class Tutorial extends Game {
 
         this.time.delayedCall(200, () => {
             const hud = this.scene.get("HUD");
-            hud.resetTimer(600000)
+            hud.resetTimer(6000000)
         });
     }
     update(t, dt) {
@@ -81,59 +89,32 @@ export class Tutorial extends Game {
         if (this.tutorialProgress === 0 && this.ready) {
             this.tutorialProgress += 1;
             this.ready = false;
-            this.textBox.showSequence([
-                "La propina que les den los clientes distribuyansela como se les cante",
-                "pero si alguno me empieza a generar perdidas lo rajo, sepanlo",
-                "ahora quiero que aprendan a usar la parrilla",
-                "agarren carbon de la caja y metanlo en el brasero para hacer unas brasas",
-                "despues metan eso en la parrilla con alguna carne",
-                "tienen que sacarlo cuando este listo, no antes ni despues",
-                "si se les quema se joden y lo hacen devuelta",
-                "ahora haganme un pollo a la parrilla y entreguenlo por allá",
-            ], 35);
+            this.textBox.showSequence(getPhrase(this.translatedDialog1), 35);
             this.textBox.once("dialogComplete", () => {
-                console.log("Fin del diálogo");
                 this.spawnPedidos(["polloAsado_2"], 600000);
             });
         }
         if (this.tutorialProgress === 1 && this.ready) {
             this.tutorialProgress += 1;
             this.ready = false;
-            this.textBox.showSequence([
-                "Ahora que saben usar la parrilla quiero que me hagan un bife y un pollo asados",
-            ], 35);
+            this.textBox.showSequence(getPhrase(this.translatedDialog2), 35);
             this.textBox.once("dialogComplete", () => {
-                console.log("Fin del diálogo");
                 this.spawnPedidos(["bife_2", "polloAsado_2"], 600000);
             });
         }
         if (this.tutorialProgress === 2 && this.ready) {
             this.tutorialProgress += 1;
             this.ready = false;
-            this.textBox.showSequence([
-                "Joya, ahora les voy a pedir algo mas complicado",
-                "quiero que me hagan un sandwich de bife y achicoria",
-                "para eso tienen que combinar en la mesa pan cortado, achicoria picada y bife asado",
-                "corten el pan en la tabla pero no lo destruyan hasta que sea pan rallado, es un corte al medio noma",
-                "piquen la achicoria tambien en la tabla y los combinan en la mesa, pero no en la tabla, la tabla es para picar",
-                "despues cocinen el bife en la parrilla con las brasas y todo eso y me lo combinan en la mesa tambien",
-                "si no me dieron ni bola por alla abajo tienen un libro rojo que es el recetario con las instrucciones",
-            ], 35);
+            this.textBox.showSequence(getPhrase(this.translatedDialog3), 35);
             this.textBox.once("dialogComplete", () => {
-                console.log("Fin del diálogo");
                 this.spawnPedidos(["sanBife_0"], 600000);
             });
         }
         if (this.tutorialProgress === 3 && this.ready) {
             this.tutorialProgress += 1;
             this.ready = false;
-            this.textBox.showSequence([
-                "Listo, mañana los quiero aca laburando",
-                "pero no se hagan los vivos que todavia estan a prueba",
-
-            ], 35);
+            this.textBox.showSequence(getPhrase(this.translatedDialog4), 35);
             this.textBox.once("dialogComplete", () => {
-                console.log("Fin del diálogo");
                 this.finishLevel()
             });
         }

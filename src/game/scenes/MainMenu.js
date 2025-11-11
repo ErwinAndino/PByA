@@ -1,33 +1,35 @@
 import InputSystem, { INPUT_ACTIONS } from "../../utils/InputSystem";
 import { DE, EN, ES, PT } from "../../utils/enums/languages";
 import { FETCHED, FETCHING, READY, TODO } from "../../utils/enums/status";
-import { getTranslations, getPhrase } from "../../utils/Translations";
+import { getTranslations, getPhrase, getLanguageConfig } from "../../utils/Translations";
 import keys from "../../utils/enums/keys";
+import LanguageSelector from "../classes/LanguageSelector.js";
 export class MainMenu extends Phaser.Scene {
-    #textSpanish;
-    #textGerman;
-    #textEnglish;
-    #textPortuguese;
 
-    #updatedTextInScene;
-    #updatedString = "Siguiente";
     #wasChangedLanguage = TODO;
     constructor() {
         super("MainMenu");
-        const { next, hello, howAreU, language } = keys.sceneInitialMenu;
-        this.#updatedString = next;
-        this.hello = hello;
-        this.howAreU = howAreU;
-        this.language2 = language;
+        const { coop, versus, scoreboard, idioma, } = keys.sceneInitialMenu;
+        const { grab, dash, lanzar, select, hit } = keys.controlsPaper
+        this.coop = coop;
+        this.versus = versus;
+        this.scoreboard = scoreboard;
+        this.idioma = idioma;
+        this.select = select;
     }
 
     init({ language }) {
-        this.language = language;
+        // Si viene desde otra escena, lo usa; si no, lo carga de localStorage
+        this.language = language || localStorage.getItem("language") || ES;
     }
 
     create() {
 
         this.language = this.language || ES;
+
+        this.isInputLocked = false;
+
+
 
         this.inputSystem = new InputSystem(this.input);
         this.inputSystem.configureKeyboard({
@@ -54,29 +56,6 @@ export class MainMenu extends Phaser.Scene {
         this.registry.set("actualLevel", 0);
 
         this.add.image(320, 180, "menuBG")
-        this.westText = this.add.text(width / 1.2, height / 1.65, "juntar", {
-            fontSize: "24px",
-            color: "#303decff",
-            fontFamily: "MyFont"
-        }).setOrigin(0.5);
-
-        this.westText.angle = 15
-
-        this.southText = this.add.text(width / 1.1, height / 1.45, "dash", {
-            fontSize: "24px",
-            color: "#303decff",
-            fontFamily: "MyFont"
-        }).setOrigin(0.5);
-
-        this.southText.angle = -10
-
-        this.eastText = this.add.text(width / 1.05, height / 2, "lanzar", {
-            fontSize: "24px",
-            color: "#303decff",
-            fontFamily: "MyFont"
-        }).setOrigin(0.5);
-
-        this.eastText.angle = 10
 
         this.menuText = this.add.text(width / 10, height / 7, "MENU", {
             fontSize: "50px",
@@ -111,92 +90,132 @@ export class MainMenu extends Phaser.Scene {
         this.achicoriaText.angle = -6
 
         //Botones
-        this.coopText = this.add.text(width / 6, height / 2, "◦ Cooperativo", {
+        this.coopText = this.add.text(width / 6, height / 2, "◦ " + getPhrase(this.coop), {
             fontSize: "24px",
             color: "#fff",
             fontFamily: "MyFont"
         }).setOrigin(0);
         this.coopText.angle = -5;
 
-        this.versusText = this.add.text(width / 5.8, height / 1.8, "◦ Versus", {
+        this.versusText = this.add.text(width / 5.8, height / 1.8, "◦ " + getPhrase(this.versus), {
             fontSize: "30px",
             color: "#fff",
             fontFamily: "MyFont"
         }).setOrigin(0);
         this.versusText.angle = -5;
 
-        this.scoreboardText = this.add.text(width / 5.5, height / 1.6, "◦ Scoreboard", {
+        this.scoreboardText = this.add.text(width / 6.8, height / 1.55, "◦ " + getPhrase(this.scoreboard), {
             fontSize: "24px",
             color: "#fff",
             fontFamily: "MyFont"
         }).setOrigin(0);
         this.scoreboardText.angle = -5;
 
-        this.languageText = this.add.text(width / 5.25, height / 1.45, "◦ " + getPhrase(this.language2), {
-            fontSize: "30px",
+        this.languageText = this.add.text(width / 6.5, height / 1.4, "◦ " + getPhrase(this.idioma), {
+            fontSize: "24px",
             color: "#fff",
             fontFamily: "MyFont"
         }
         ).setOrigin(0);
         this.languageText.angle = -5;
 
-        this.#updatedTextInScene = this.languageText; // o cualquier texto que quieras
+        // hoja de controles
+
+        this.westText = this.add.text(width / 1.22, height / 1.62, getPhrase(this.select), {
+            fontSize: "24px",
+            color: "#303decff",
+            fontFamily: "MyFont"
+        }).setOrigin(0.5);
+
+        this.westText.angle = 15
+
+        this.languageActive = false
 
         this.selector = 3
         this.highlightText()
+        console.log(this.language)
+        const langs = [
+            { key: "freidora", code: ES },
+            { key: "brasero", code: EN },
+        ];
+        this.languageSelector = new LanguageSelector(this, 220, 260, langs, this.language, (langCode) => {
+            console.log("Idioma cambiado a:", langCode);
+            this.getTranslations(langCode)
+            localStorage.setItem("language", langCode); // ✅ Guarda el idioma actual
+            // Acá podrías guardar la preferencia en localStorage, etc.
+        });
+        this.languageSelector.setLanguage(this.language);
     }
 
     update() {
 
         if (this.#wasChangedLanguage === FETCHED) {
             this.#wasChangedLanguage = READY;
-            this.#updatedTextInScene.setText(getPhrase(this.#updatedString));
-            this.languageText.setText(getPhrase(this.language2));
+            this.coopText.setText("◦ " + getPhrase(this.coop));
+            this.versusText.setText("◦ " + getPhrase(this.versus));
+            this.scoreboardText.setText("◦ " + getPhrase(this.scoreboard));
+            this.languageText.setText("◦ " + getPhrase(this.idioma));
+            this.westText.setText(getPhrase(this.select))
         }
 
+        // Si el input está bloqueado, no procesar nada
+        if (this.isInputLocked) return;
 
+        if (this.selector === 0 && this.languageSelector.active) {
+            // mover entre banderas con A/D
+            if (this.inputSystem.isJustPressed(INPUT_ACTIONS.LEFT, "player1")) {
+                this.languageSelector.changeLanguage(-1);
+            }
+            if (this.inputSystem.isJustPressed(INPUT_ACTIONS.RIGHT, "player1")) {
+                this.languageSelector.changeLanguage(1);
+            }
 
-        if (this.inputSystem.isJustPressed(INPUT_ACTIONS.UP, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.UP, "player2")) {
-            console.log("PA RRIBA")
-            this.selector = Math.min(3, this.selector + 1)
-            this.highlightText()
+            // confirmar idioma con Z
+            if (this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player1")) {
+                this.languageSelector.confirmSelection();
+            }
         }
-        if (this.inputSystem.isJustPressed(INPUT_ACTIONS.DOWN, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.DOWN, "player2")) {
-            console.log("PA BAJO")
-            this.selector = Math.max(0, this.selector - 1)
-            this.highlightText()
 
+        if (!this.languageActive) {
+            if (this.inputSystem.isJustPressed(INPUT_ACTIONS.UP, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.UP, "player2")) {
+                console.log("PA RRIBA")
+                this.selector = Math.min(3, this.selector + 1)
+                this.highlightText()
+            }
+            if (this.inputSystem.isJustPressed(INPUT_ACTIONS.DOWN, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.DOWN, "player2")) {
+                console.log("PA BAJO")
+                this.selector = Math.max(0, this.selector - 1)
+                this.highlightText()
+
+            }
         }
         if (this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player2")) {
             console.log("SI SI SI SI")
             if (this.selector === 3) { // COOP
                 this.registry.set("mode", 1);
                 if (this.registry.get("actualLevel") === 0) {
-                    this.scene.start("Tutorial");
+                    this.scene.start("Load", { nextScene: "Tutorial" });
                 } else {
-                    this.scene.start("Game");
+                    this.scene.start("Load", { nextScene: "Game" });
                 }
 
-                this.scene.launch("HUD"); // lanzar HUD encima del Game
+
             }
             if (this.selector === 2) { // VERSUS
                 this.registry.set("mode", 2);
                 if (this.registry.get("actualLevel") === 0) {
-                    this.scene.start("Tutorial");
+                    this.scene.start("Load", { nextScene: "Tutorial" });
                 } else {
-                    this.scene.start("Game");
+                    this.scene.start("Load", { nextScene: "Game" });
                 }
-                this.scene.launch("HUD"); // lanzar HUD encima del Game
-            }
-            if (this.selector === 1) {// SCOREBOARD
 
             }
+            if (this.selector === 1) {// SCOREBOARD
+            }
             if (this.selector === 0) { // LANGUAGE
-                if (this.language === ES) {
-                    this.getTranslations(EN)
-                } else if (this.language === EN) {
-                    this.getTranslations(ES)
-                }
+                this.languageActive = true
+                this.languageSelector.toggleArrows()
+
             }
         }
 
@@ -220,7 +239,37 @@ export class MainMenu extends Phaser.Scene {
     async getTranslations(language) {
         this.language = language;
         this.#wasChangedLanguage = FETCHING;
+        const { width, height } = this.scale;
+
+        // 🔒 Bloquea el input mientras se cargan las traducciones
+        this.isInputLocked = true;
+        this.cameras.main.setAlpha(0.5);
+
+        this.loaderSprite = this.add.sprite(width / 2, height / 2 + 130, "campana").setScale(2);
+        this.tweens.add({
+            targets: this.loaderSprite,
+            scale: 3,
+            duration: 200,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut"
+        });
 
         await getTranslations(language, this.updateWasChangedLanguage);
+
+        this.tweens.add({
+            targets: this.loaderSprite,
+            scale: 5,
+            duration: 400,
+            yoyo: true,
+            ease: "Back.easeOut",
+            onComplete: () => {
+                this.loaderSprite.destroy()
+                this.cameras.main.setAlpha(1);
+                // 🔓 Desbloquea cuando termina de cargar
+                this.isInputLocked = false;
+                this.languageActive = false;
+            }
+        });
     }
 }

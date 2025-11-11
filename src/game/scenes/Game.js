@@ -9,6 +9,8 @@ import InputSystem, { INPUT_ACTIONS } from "../../utils/InputSystem.js";
 import { Recetario } from "../classes/Recetario.js";
 import { LibroRecetario } from "../classes/LibroRecetario.js";
 import { Freidora } from "../classes/Freidora.js";
+import { getPhrase } from "../../utils/Translations";
+import keys from "../../utils/enums/keys";
 
 export class Game extends Scene {
   constructor(key = "Game") {
@@ -16,6 +18,15 @@ export class Game extends Scene {
     this.cycleText = null;
     this.currentCycle = "init";
     this.player = null;
+
+    const { money, failedToCook, allRecepiesCooked, failedToDodge, bothLose, oneLoses, jugador } = keys.sceneGame;
+    this.failedToCook = failedToCook;
+    this.allRecepiesCooked = allRecepiesCooked;
+    this.failedToDodge = failedToDodge;
+    this.bothLose = bothLose;
+    this.oneLoses = oneLoses;
+    this.jugador = jugador;
+    console.log("el jugador es " + this.jugador)
   }
 
   init() {
@@ -65,6 +76,7 @@ export class Game extends Scene {
 
     //Cursors
     this.victoryKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.N);
+    this.defeatKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
     this.CaceriaKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B);
     this.recetarioKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
     this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
@@ -147,6 +159,14 @@ export class Game extends Scene {
         // pausa el juego y lanza el menú
         this.scene.launch("PauseMenu", { from: this.scene.key });
       }
+    }
+    if (Phaser.Input.Keyboard.JustDown(this.defeatKey)) {
+      if (this.currentMode === 2) {
+        this.registry.set("vsPoints2", -10);
+      } else {
+        this.registry.set("coopPoints", -10)
+      }
+      this.finishLevel();
     }
     if (Phaser.Input.Keyboard.JustDown(this.victoryKey)) {
       this.finishLevel();
@@ -445,10 +465,10 @@ export class Game extends Scene {
     this.nivel1 = { pedidosDispo: ["polloAsado_2", "bife_2", "achicoriaPicada_0"], ingreNecesarios: ["polloCrudo_0", "bifeCrudo_0", "achicoriaCruda_0"] }
     this.nivel2 = { pedidosDispo: ["polloAsado_2", "bife_2", "achicoriaPicada_0", "papaAsada_0", "papaCortada_1"], ingreNecesarios: ["polloCrudo_0", "bifeCrudo_0", "achicoriaCruda_0", "papaCruda_0"] }
     this.nivel3 = { pedidosDispo: ["polloAsado_2", "bife_2", "achicoriaPicada_0", "papaAsada_0", "papaCortada_1", "lomo_2", "chorizo_2"], ingreNecesarios: ["polloCrudo_0", "bifeCrudo_0", "achicoriaCruda_0", "papaCruda_0", "lomoCrudo_0", "chorizoCrudo_0"] }
-    this.nivel4 = { pedidosDispo: ["polloAsado_2", "bife_2", "achicoriaPicada_0", "papaAsada_0", "papaCortada_1", "lomo_0", "chorizo_2", "pancho", "sanBife_0"], ingreNecesarios: ["polloCrudo_0", "bifeCrudo_0", "achicoriaCruda_0", "papaCruda_0", "lomoCrudo_0", "chorizoCrudo_0", "panCrudo_0"] }
-    this.nivel5 = { pedidosDispo: ["polloAsado_2", "bife_2", "achicoriaPicada_0", "papaAsada_0", "papaCortada_1", "lomo_0", "chorizo_2", "pancho", "sanBife_0", "milaPollo_1", "milaCarne_1"], ingreNecesarios: ["polloCrudo_0", "bifeCrudo_0", "achicoriaCruda_0", "papaCruda_0", "lomoCrudo_0", "chorizoCrudo_0", "panCrudo_0"] }
-    this.nivel6 = { pedidosDispo: ["polloAsado_2", "bife_2", "achicoriaPicada_0", "papaAsada_0", "papaCortada_1", "lomo_0", "chorizo_2", "pancho", "sanBife_0", "milaPollo_1", "milaCarne_1", "sanMila_0", "sanMilaCarne_0"], ingreNecesarios: ["polloCrudo_0", "bifeCrudo_0", "achicoriaCruda_0", "papaCruda_0", "lomoCrudo_0", "chorizoCrudo_0", "panCrudo_0"] }
-    this.nivel7 = { pedidosDispo: ["polloAsado_2", "bife_2", "achicoriaPicada_0", "papaAsada_0", "papaCortada_1", "lomo_0", "chorizo_2", "pancho", "sanBife_0", "milaPollo_1", "milaCarne_1", "sanMila_0", "sanMilaCarne_0", "empaPollo_2", "empaCarne_2"], ingreNecesarios: ["polloCrudo_0", "bifeCrudo_0", "achicoriaCruda_0", "papaCruda_0", "lomoCrudo_0", "chorizoCrudo_0", "panCrudo_0", "tapaEmpanada_0"] }
+    this.nivel4 = { pedidosDispo: ["polloAsado_2", "bife_2", "achicoriaPicada_0", "papaAsada_0", "papaCortada_1", "lomo_2", "chorizo_2", "pancho", "sanBife_0"], ingreNecesarios: ["polloCrudo_0", "bifeCrudo_0", "achicoriaCruda_0", "papaCruda_0", "lomoCrudo_0", "chorizoCrudo_0", "panCrudo_0"] }
+    this.nivel5 = { pedidosDispo: ["polloAsado_2", "bife_2", "achicoriaPicada_0", "papaAsada_0", "papaCortada_1", "lomo_2", "chorizo_2", "pancho", "sanBife_0", "milaPollo_1", "milaCarne_1"], ingreNecesarios: ["polloCrudo_0", "bifeCrudo_0", "achicoriaCruda_0", "papaCruda_0", "lomoCrudo_0", "chorizoCrudo_0", "panCrudo_0"] }
+    this.nivel6 = { pedidosDispo: ["polloAsado_2", "bife_2", "achicoriaPicada_0", "papaAsada_0", "papaCortada_1", "lomo_2", "chorizo_2", "pancho", "sanBife_0", "milaPollo_1", "milaCarne_1", "sanMila_0", "sanMilaCarne_0"], ingreNecesarios: ["polloCrudo_0", "bifeCrudo_0", "achicoriaCruda_0", "papaCruda_0", "lomoCrudo_0", "chorizoCrudo_0", "panCrudo_0"] }
+    this.nivel7 = { pedidosDispo: ["polloAsado_2", "bife_2", "achicoriaPicada_0", "papaAsada_0", "papaCortada_1", "lomo_2", "chorizo_2", "pancho", "sanBife_0", "milaPollo_1", "milaCarne_1", "sanMila_0", "sanMilaCarne_0", "empaPollo_2", "empaCarne_2"], ingreNecesarios: ["polloCrudo_0", "bifeCrudo_0", "achicoriaCruda_0", "papaCruda_0", "lomoCrudo_0", "chorizoCrudo_0", "panCrudo_0", "tapaEmpanada_0"] }
     if (this.actualLevel === 0) {
       this.pedidosDisponibles = this.nivel0.pedidosDispo
       this.ingredientesNecesarios = this.nivel0.ingreNecesarios
@@ -506,13 +526,13 @@ export class Game extends Scene {
   createLayout() {
     //FONDO Y PJ ---------------------------------------------------------
     this.add.image(320, 180, "background");
-    this.add.image(565, 195, "cenizas");
+    this.add.image(565, 225, "cenizas");
     for (let i = 0; i < 4; i++) {
       let campana = this.add.image(100, 65 + (90 * i), "campana")
       campana.setDepth(99)
     }
-    this.add.sprite(550, 180, "asador", 4);
-    this.add.sprite(575, 180, "asador", 5);
+    this.add.sprite(550, 210, "asador", 4);
+    this.add.sprite(575, 210, "asador", 5);
     this.add.sprite(350, 225, "mesa", 6);
     this.add.sprite(375, 225, "mesa", 7);
     this.barra = this.physics.add.sprite(100, 180, "tabla");
@@ -539,7 +559,8 @@ export class Game extends Scene {
     this.libroRecetario = new LibroRecetario(this, 100, 260)
     this.Interactuables.push(this.libroRecetario)
 
-    this.arrayUbicacionesCajas = [{ x: 240, y: 80 }, { x: 290, y: 65 }, { x: 358, y: 74 }, { x: 260, y: 205 }, { x: 460, y: 190 }, { x: 340, y: 280 }, { x: 430, y: 300 }, { x: 525, y: 300 }, { x: 575, y: 275 }]
+    this.ubicaionesDefault = [{ x: 240, y: 80 }, { x: 290, y: 65 }, { x: 358, y: 74 }, { x: 260, y: 205 }, { x: 460, y: 190 }, { x: 340, y: 280 }, { x: 430, y: 300 }, { x: 525, y: 330 }, { x: 575, y: 310 }]
+    this.arrayUbicacionesCajas = this.customLayout || this.ubicaionesDefault
 
     let cont = 0;
     this.ingredientesNecesarios.forEach(element => {
@@ -557,7 +578,7 @@ export class Game extends Scene {
       cont++;
     });
 
-    let box1 = new IngredientBox(this, 600, 80, "carbon_0", "caja", 10);
+    let box1 = new IngredientBox(this, 600, 110, "carbon_0", "caja", 10);
     this.physics.add.collider(box1, this.player)
     this.physics.add.collider(box1, this.player2)
     this.Interactuables.push(box1);
@@ -585,14 +606,14 @@ export class Game extends Scene {
     //Creacion de asador
     for (let i = 0; i < 4; i++) {
       let x = 550 + (i % 2) * 25; // X 200, 225, 200, 225
-      let y = 180 + (Math.floor(i / 2) * 25); // Y aumenta en 1 cada 2 iteraciones
+      let y = 210 + (Math.floor(i / 2) * 25); // Y aumenta en 1 cada 2 iteraciones
       let asador = new Asador(this, x, y, 25, i);
       this.physics.add.collider(this.player, asador);
       this.physics.add.collider(this.player2, asador);
       this.Interactuables.push(asador);
     }
     //Creacion del brasero
-    let brasero = new Brasero(this, 540, 70, 25);
+    let brasero = new Brasero(this, 540, 100, 25);
     this.physics.add.collider(this.player, brasero);
     this.physics.add.collider(this.player2, brasero);
     this.Interactuables.push(brasero);
@@ -655,9 +676,9 @@ export class Game extends Scene {
     if (mode === 1) {
       let points = this.registry.get("coopPoints");
       if (points < 0) {
-        reason = "Demasiados pedidos sin entregar!";
+        reason = getPhrase(this.failedToCook);
         if (this.actualLevel >= 8) {
-          reason = "Pudieron aprender todas las recetas!"
+          reason = getPhrase(this.allRecepiesCooked);
           completado = true;
         }
       }
@@ -666,10 +687,10 @@ export class Game extends Scene {
       let points1 = this.registry.get("vsPoints1");
       let points2 = this.registry.get("vsPoints2");
       if (points1 < 0 && points2 < 0) {
-        reason = "A los dos les falto calle";
+        reason = getPhrase(this.bothLose);
         empate = true;
       } else if (points1 < 0 || points2 < 0) {
-        reason = `Al jugador ${points1 < 0 ? 1 : 2} le falta calle`;
+        reason = getPhrase(this.jugador) + " " + (points1 < 0 ? 1 : 2) + " " + getPhrase(this.oneLoses);
       }
     }
 

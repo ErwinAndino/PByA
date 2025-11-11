@@ -1,7 +1,59 @@
 import InputSystem, { INPUT_ACTIONS } from "../../utils/InputSystem";
+import { getPhrase } from "../../utils/Translations";
+import keys from "../../utils/enums/keys";
 export class Load extends Phaser.Scene {
     constructor() {
         super("Load");
+        const { grab, dash, lanzar, select, hit } = keys.controlsPaper
+        const { N1, N2, N3, N4, N5, N6, N7, N8, N9, N10, N11, N12, N13, N14, N15, N16, N17, N18, N19, N20, N21, N22, N23, N24, N25, N26, N27, N28, N29, N30, N31, N32, N33, N34, N35, N36, N37, N38, N39, N40, didYouKnow, pressAnyKey } = keys.sabiasQue
+        this.arrayWierdPhrases = [
+            N1,
+            N2,
+            N3,
+            N4,
+            N5,
+            N6,
+            N7,
+            N8,
+            N9,
+            N10,
+            N11,
+            N12,
+            N13,
+            N14,
+            N15,
+            N16,
+            N17,
+            N18,
+            N19,
+            N20,
+            N21,
+            N22,
+            N23,
+            N24,
+            N25,
+            N26,
+            N27,
+            N28,
+            N29,
+            N30,
+            N31,
+            N32,
+            N33,
+            N34,
+            N35,
+            N36,
+            N37,
+            N38,
+            N39,
+            N40,
+        ]
+        this.didYouKnow = didYouKnow;
+        this.pressAnyKey = pressAnyKey;
+        this.grab = grab;
+        this.dash = dash;
+        this.lanzar = lanzar;
+        this.hit = hit;
     }
 
     init(data) {
@@ -33,61 +85,22 @@ export class Load extends Phaser.Scene {
         const width = this.cameras.main.width;
         const height = this.cameras.main.height;
 
-        const sabiasQueText = this.add.text(width / 2, height / 2 - 150, "Sabías qué?", {
+        const sabiasQueText = this.add.text(width / 2, height / 2 - 150, getPhrase(this.didYouKnow), {
             fontFamily: "MyFont",
             fontSize: "22px",
             color: "#ffffff"
         }).setOrigin(0.5);
 
-        let arrayWierdPhrases = [
-            "El primer gol olímpico de la historia fue argentino",
-            "En Mendoza, hace más de 4.000 años cayó una lluvia de meteoritos gigantes",
-            "En la Patagonia se halló el Argentinosaurus, uno de los más grandes",
-            "El primer vehículo blindado de Latinoamérica fue argentino: el Yacaré",
-            "En Buenos Aires hay más psicólogos per cápita que en cualquier otra ciudad del mundo.",
-            "En Argentina se realizó la primera transmisión radial pública del mundo",
-            "El colectivo (bus urbano) fue inventado en Argentina en 1928",
-            "Argentina ganó tres Copas del Mundo en Fútbol (1978, 1986 y 2022)",
-            "Argentina fue campeona del primer Mundial de Básquet",
-            "El Argentino Favaloro inventó el bypass, salvando millones de vidas",
-            "El semaforo peatonal se inventó en Rosario",
-            "La birome o bolígrafo fue inventado por un argentino",
-            "El pollo (alimento) viene del pollo (animal).",
-            "Sin fuego no hay asado.",
-            "La parrilla sin carbón es una mesa cara.",
-            "La achicoria es verde.",
-            "Si se quema, ya está demasiado hecho.",
-            "Las papas fritas se fríen con aceite caliente.",
-            "El cuchillo afilado corta mejor.",
-            "El cliente con hambre no espera.",
-            "El pan acompaña todo.",
-            "Si se cae al piso, pero por poco tiempo, todavía sirve.",
-            "Cuanto más carbón, más calor.",
-            "La salsa picante pica.",
-            "El agua apaga el fuego (y el asado).",
-            "Para cocinar, primero hay que prender la parrilla.",
-            "El que no cuida el fuego, come tarde.",
-            "La parrilla caliente quema (comprobado científicamente).",
-            "El humo perfuma la ropa del parrillero.",
-            "Si suena cumbia, algo se está cocinando bien.",
-            "La carne se da vuelta una sola vez… o ninguna.",
-            "El postre llega cuando ya no entra más.",
-            "Si no hay clientes, no hay pedidos.",
-            "El humo no respeta direcciones.",
-            "La parrilla no está sucia, está condimentada.",
-            "La música fuerte hace que cocines más rápido (mentira).",
-            "El parrillero sin delantal vive al límite.",
-            "El fernet va en culo de botella o no va.",
-            "La ensalada es opcional (pero necesaria para la conciencia).",
-            "Ante la duda, ponele chimi."
-        ]
+        let randomIndex = Math.floor(Math.random() * this.arrayWierdPhrases.length)
 
-        const randomPhrase = arrayWierdPhrases[Math.floor(Math.random() * arrayWierdPhrases.length)];
+        const randomPhrase = this.arrayWierdPhrases[randomIndex];
+        console.log(randomIndex)
+        console.log(randomPhrase)
 
 
         this.add.image(width, height, "hoja").setOrigin(1, 1)
 
-        const randomPhraseText = this.add.text(width / 2, height / 2 - 120, randomPhrase, {
+        const randomPhraseText = this.add.text(width / 2, height / 2 - 120, getPhrase(randomPhrase), {
             fontFamily: "MyFont",
             fontSize: "22px",
             color: "#ffffff"
@@ -122,6 +135,46 @@ export class Load extends Phaser.Scene {
         // Guardamos referencias
         this.loadingText = loadingText;
         this.loaderSprite = loaderSprite;
+
+        //hoja de botones
+        let wText;
+        let sText;
+        let eText;
+
+        if (this.nextScene === "Caceria") {
+            wText = this.hit;
+            sText = this.dash;
+            eText = null;
+
+        } else {
+            wText = this.grab;
+            sText = this.dash;
+            eText = this.lanzar;
+        }
+
+        this.westText = this.add.text(width / 1.2, height / 1.63, getPhrase(wText), {
+            fontSize: "24px",
+            color: "#303decff",
+            fontFamily: "MyFont"
+        }).setOrigin(0.5);
+
+        this.westText.angle = 25
+
+        this.southText = this.add.text(width / 1.1, height / 1.45, getPhrase(sText), {
+            fontSize: "24px",
+            color: "#303decff",
+            fontFamily: "MyFont"
+        }).setOrigin(0.5);
+
+        this.southText.angle = -10
+
+        this.eastText = this.add.text(width / 1.05, height / 2, getPhrase(eText), {
+            fontSize: "24px",
+            color: "#303decff",
+            fontFamily: "MyFont"
+        }).setOrigin(0.5);
+
+        this.eastText.angle = 10
     }
 
     update(time, delta) {
@@ -132,7 +185,7 @@ export class Load extends Phaser.Scene {
 
             if (progress >= 1) {
                 this.ready = true;
-                this.loadingText.setText("Presiona cualquier tecla para continuar");
+                this.loadingText.setText(getPhrase(this.pressAnyKey));
 
                 // Al finalizar, podés hacer que el sprite “celebre”
                 this.tweens.add({
@@ -160,9 +213,9 @@ export class Load extends Phaser.Scene {
     }
 
     startNextScene() {
-        this.scene.start(this.nextScene);
-        if (this.nextScene === "Game") {
+        if (this.nextScene === "Game" || this.nextScene === "Tutorial") {
             this.scene.launch("HUD");
         }
+        this.scene.start(this.nextScene);
     }
 }
