@@ -9,6 +9,7 @@ export class Brasero extends KitchenBox {
         this.textureCoal = scene.add.sprite(x, y - 25, "nivelCarbon", this.coalFrame); // crea carbon por encima del brasero
         this.textureCoal.setVisible(false);
         this.scene = scene;
+        this.audio = this.scene.scene.get("Preloader");
         this.textureKey = textureKey;
         // this.holdingItem = false;
         this.coalLevel = 0;
@@ -24,8 +25,8 @@ export class Brasero extends KitchenBox {
         this.iconoCarbon.setVisible(true);
         this.timerCoal = 0;
         this.durationCoal = 10000;
-        this.actionSound = this.scene.coccionAudio
-        this.actionFinish = this.scene.coccionListoAudio
+        this.actionSound = this.audio.coccionAudio
+        this.actionFinish = this.audio.coccionListoAudio
 
         this.emitterHumo = this.scene.add.particles(x, y, 'particleHumo', { // humo grande
             frame: [0, 1, 2],

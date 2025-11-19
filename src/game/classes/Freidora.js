@@ -6,6 +6,7 @@ export class Freidora extends KitchenBox {
         const textureKey = "freidora";
         super(scene, x, y, textureKey, size, frame);
         this.scene = scene;
+        this.audio = this.scene.scene.get("Preloader");
         this.textureKey = textureKey;
         this.holdingItem = false;
         this.itemHolded = null;
@@ -13,8 +14,8 @@ export class Freidora extends KitchenBox {
         this.etapas = {};
         this.etapaActual = null;
 
-        this.actionSound = this.scene.fritarAudio
-        this.actionFinish = this.scene.coccionListoAudio
+        this.actionSound = this.audio.fritarAudio
+        this.actionFinish = this.audio.coccionListoAudio
 
         this.circleTimer = new CircularTimer(scene, x + 13, y + 13, 6, this.cookDuration, () => { this.finishCook() }, 2)
     }

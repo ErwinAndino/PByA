@@ -35,6 +35,7 @@ export class CircularTimer {
     }
 
     update(dt) {
+        if (this.paused) return;
         if (!this.active) return;
 
         this.progress += dt;
@@ -90,5 +91,12 @@ export class CircularTimer {
             this.circle.arc(this.x, this.y, this.radius, -Math.PI / 2, -Math.PI / 2 + angle, false);
             this.circle.strokePath();
         }
+    }
+    pause() {
+        this.paused = true;
+    }
+
+    resume() {
+        this.paused = false;
     }
 }

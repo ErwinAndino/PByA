@@ -1,10 +1,14 @@
 import InputSystem, { INPUT_ACTIONS } from "../../utils/InputSystem";
 import { Boss } from "../classes/Boss";
 import { Player } from "../classes/Player";
+import { getPhrase } from "../../utils/Translations";
+import keys from "../../utils/enums/keys";
 
 export class Caceria extends Phaser.Scene {
   constructor() {
     super("Caceria");
+    const { money, failedToCook, allRecepiesCooked, failedToDodge, bothLose, oneLoses, jugador } = keys.sceneGame;
+    this.failedToDodge = failedToDodge;
   }
 
   init(data) {
@@ -22,6 +26,7 @@ export class Caceria extends Phaser.Scene {
 
   create() {
     this.gameScene = this.scene.get("Game");
+    this.audio = this.scene.get("Preloader");
     const { width, height } = this.scale;
     this.scene.bringToTop();
 
@@ -67,6 +72,8 @@ export class Caceria extends Phaser.Scene {
       [INPUT_ACTIONS.WEST]: [Phaser.Input.Keyboard.KeyCodes.J]
     }, "player2");
 
+    this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+
     this.add.image(320, 180, "backgroundCaceria");
     // this.nightOverlay = this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0x000033, 0.6)
     //   .setOrigin(0)
@@ -108,7 +115,7 @@ export class Caceria extends Phaser.Scene {
         .setScale(2);
       this.heartsP2.push(heart);
     }
-    this.gameScene.ambienteBossAudio.play({
+    this.audio.ambienteBossAudio.play({
       volume: 0.3, // Ajusta el volumen
       rate: 1    // Ajusta el pitch
     });
@@ -124,7 +131,7 @@ export class Caceria extends Phaser.Scene {
       this.player1Lives--;
       this._updateHearts(1);
       console.log(`Player 1 recibió daño (${this.player1Lives}/3)`);
-      this.gameScene.golpeBossAudio.play({
+      this.audio.golpeBossAudio.play({
         volume: 0.3, // Ajusta el volumen
         rate: Phaser.Math.FloatBetween(1.2, .8)    // Ajusta el pitch
       });
@@ -134,7 +141,7 @@ export class Caceria extends Phaser.Scene {
       this.player2Lives--;
       this._updateHearts(2);
       console.log(`Player 2 recibió daño (${this.player2Lives}/3)`);
-      this.gameScene.golpeBossAudio.play({
+      this.audio.golpeBossAudio.play({
         volume: 0.3, // Ajusta el volumen
         rate: Phaser.Math.FloatBetween(1.2, .8)    // Ajusta el pitch
       });
@@ -169,7 +176,7 @@ export class Caceria extends Phaser.Scene {
         // Esperar 2 segundos y volver al menú
         this.time.delayedCall(2000, () => {
           this.sound.stopAll();
-          this.scene.start("Victory", { reason: "La criatura destruyó la parrilla", empate: false, completado: false, boss: true }); // <-- Cambiá por el nombre real de tu escena de menú
+          this.scene.start("Victory", { reason: getPhrase(this.failedToDodge), empate: false, completado: false, boss: true }); // <-- Cambiá por el nombre real de tu escena de menú
         });
       }
     }
@@ -182,6 +189,12 @@ export class Caceria extends Phaser.Scene {
       this.boss.update(dt);
     }
 
+    if (Phaser.Input.Keyboard.JustDown(this.escKey)) {
+      if (!this.scene.isActive("PauseMenu")) {
+        // pausa el juego y lanza el menú
+        this.scene.launch("PauseMenu", { from: this.scene.key });
+      }
+    }
     //PLAYER 1 ----------------------------------------------------------------------------
     if (this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player1")) {
       console.log("attack p1")

@@ -6,6 +6,7 @@ export class Boss extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, key) {
     super(scene, x, y, key, 0);
     this.scene = scene;
+    this.audio = this.scene.scene.get("Preloader");
     this.actualLevel = this.scene.registry.get("actualLevel");
     this.hp = 500 * this.actualLevel;
     this.key = key
@@ -254,7 +255,7 @@ class AttackState extends State {
           if (now - this.boss.lastAttackFrameTime >= this.attackDelay) {
             this.spawnHitbox(facingRight);
             this.applyAttackStep();
-            this.boss.gameScene.dashAudio.play({
+            this.boss.audio.dashAudio.play({
               volume: 0.3, // Ajusta el volumen
               rate: Phaser.Math.FloatBetween(.8, 1)    // Ajusta el pitch
             });
@@ -354,13 +355,13 @@ class HurtState extends State {
     console.log("%cBoss recibe daño", "color: red");
     this.timer = 0;
     this.duration = 300;
-    this.boss.gameScene.golpePjAudio.play({
+    this.boss.audio.golpePjAudio.play({
       volume: 0.3, // Ajusta el volumen
       rate: Phaser.Math.FloatBetween(.8, 1)    // Ajusta el pitch
     });
 
     if (this.boss.hp <= 0) {
-      this.boss.gameScene.muerteBossAudio.play({
+      this.boss.audio.muerteBossAudio.play({
         volume: 0.3, // Ajusta el volumen
         rate: 1    // Ajusta el pitch
       });
@@ -403,7 +404,6 @@ class DeadState extends State {
         scene.time.delayedCall(1000, () => {
           scene.sound.stopAll();
           scene.scene.start("Load", { nextScene: "Game" });
-          scene.scene.launch("HUD"); // lanzar HUD encima del Game
         });
       }
     });
@@ -448,7 +448,7 @@ class DashState extends State {
           if (now - this.boss.lastDashFrameTime >= this.dashDelay) {
             this.spawnHitbox();
             this.hitboxFrames.add(4);
-            this.boss.gameScene.dashAudio.play({
+            this.boss.audio.dashAudio.play({
               volume: 0.3, // Ajusta el volumen
               rate: Phaser.Math.FloatBetween(.2, .6)    // Ajusta el pitch
             });

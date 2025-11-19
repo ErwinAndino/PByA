@@ -21,7 +21,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.inputSystem = inputSystem;
     this.attackCooldown = 250; // 500 ms
     this.lastAttack = 0;
-    this.gameScene = this.scene.scene.get("Game");
+
+    this.audio = this.scene.scene.get("Preloader")
 
     //MAQUINA DE ESTADO DE MOVIMIENTO -------------------------------
     this.movingSM = new StateMachine("idle");
@@ -63,7 +64,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.scene.anims.create({
           key: animKey,
           frames: this.scene.anims.generateFrameNumbers(key, { start: dirStart[dir], end: dirEnd[dir] }),
-          frameRate: 6,
+          frameRate: 10,
           repeat: -1
         });
       }
@@ -167,7 +168,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     const animKey = `p${this.kind}_Attack`;
     this.anims.play(animKey, true);
-    this.gameScene.dashAudio.play({
+    this.audio.dashAudio.play({
       volume: 0.3, // Ajusta el volumen
       rate: Phaser.Math.FloatBetween(1.2, 1.6)    // Ajusta el pitch
     });
@@ -306,7 +307,7 @@ class MovingState extends State {
     this.stepTimer += dt;
     if (this.stepTimer >= this.stepInterval) {
       this.stepTimer = 0;
-      this.player.gameScene.caminarAudio.play({
+      this.player.audio.caminarAudio.play({
         volume: .2,
         rate: Phaser.Math.FloatBetween(.8, 1.2)
       })
@@ -388,7 +389,7 @@ class HoldingIngredientState extends State {
     this.player.itemHolded.setPosition(this.player.body.center.x, this.player.body.center.y - 10);
     this.player.itemHolded.setGrabbed(true)
     this.player.itemHolded.setVisible(true)
-    this.player.gameScene.agarrarAudio.play({
+    this.player.audio.agarrarAudio.play({
       volume: .1,
       rate: 1.2
     })
@@ -403,7 +404,7 @@ class HoldingIngredientState extends State {
     this.player.itemHolded.setVisible(true);
     this.player.itemHolded.setGrabbed(false)
     this.player.itemHolded = null;
-    this.player.gameScene.agarrarAudio.play({
+    this.player.audio.agarrarAudio.play({
       volume: .1,
       rate: .8
     })
@@ -434,7 +435,7 @@ class DashingState extends State {
       right: 28  // frame de dash hacia derecha
     };
     this.player.setFrame(dashFrames[dir]);
-    this.player.gameScene.dashAudio.play({
+    this.player.audio.dashAudio.play({
       volume: 0.5, // Ajusta el volumen
       rate: Phaser.Math.FloatBetween(1, 1.4)    // Ajusta el pitch
     });

@@ -10,6 +10,7 @@ export class Asador extends KitchenBox {
         textureCoal.setVisible(false);
         super(scene, x, y, textureKey, size, frame);
         this.scene = scene;
+        this.audio = this.scene.scene.get("Preloader");
         this.textureKey = textureKey;
         this.holdingItem = false;
         this.itemHolded = null;
@@ -25,8 +26,8 @@ export class Asador extends KitchenBox {
         this.textureCoal = textureCoal;
         this.timerCoal = 0;
         this.durationCoal = 10000;
-        this.actionSound = this.scene.coccionAudio
-        this.actionFinish = this.scene.coccionListoAudio
+        this.actionSound = this.audio.coccionAudio
+        this.actionFinish = this.audio.coccionListoAudio
 
         this.emitterHumo = this.scene.add.particles(x, y, 'particleHumo', { // humo grande
             frame: [0, 1, 2],
@@ -47,7 +48,7 @@ export class Asador extends KitchenBox {
                 type: "random", // Las partículas se emiten desde posiciones aleatorias dentro del área
             },
         });
-        
+
         this.emitterHumo2 = this.scene.add.particles(x, y, 'particleHumo2', { // humo chico
             frame: [0, 1, 2, 3],
             speedX: { min: -10, max: 10 },
@@ -69,8 +70,8 @@ export class Asador extends KitchenBox {
         });
         this.emitterHumo.setDepth(200)
         this.emitterHumo2.setDepth(200)
-        
-        
+
+
         this.circleTimer = new CircularTimer(scene, x + 13, y + 13, 6, this.cookDuration, () => { this.finishCook() }, 2)
     }
 

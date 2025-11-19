@@ -3,15 +3,21 @@ import { CircularTimer } from "./CircularTimer.js";
 import { Ingredientes } from "./Ingredientes.js";
 
 export class Task extends Interactuables {
-    constructor(scene, x, y, availableIngredients = [], size = 48, textureKey = "orden") {
+    constructor(scene, x, y, availableIngredients = [], size = 48, textureKey = "orden", ingredients = [null], duration = 40000) {
 
         super(scene, x, y, textureKey, size);
 
         this.scene = scene;
+        this.audio = this.scene.scene.get("Preloader")
         this.textureKey = textureKey;
         this.availableIngredients = availableIngredients;
         this.ingredientList = [];
-        this.ingredientAmount = Math.floor(Math.random() * 3) + 1;
+        console.log(ingredients)
+        if (ingredients[0] === null) {
+            this.ingredientAmount = Math.floor(Math.random() * 3) + 1
+        } else {
+            this.ingredientAmount = ingredients.length
+        }
         this.ordersLeft = this.ingredientAmount;
         this.itemsHolded = []
 
@@ -20,17 +26,21 @@ export class Task extends Interactuables {
         this.zoneLayout.setBlendMode(Phaser.BlendModes.LIGHTEN)
         this.taskDuration = 0
         for (let i = 0; i < this.ingredientAmount; i++) {
-            const randomIndexPedidosDisponibles = Math.floor(Math.random() * this.availableIngredients.length)
-            const nextIngredient = new Ingredientes(this.scene, x + 5, y + (20 * i) - 15, this.availableIngredients[randomIndexPedidosDisponibles]);
-            nextIngredient.done = false;
-            nextIngredient.setGrabbed(true)
-            this.itemsHolded.push(nextIngredient);
-            nextIngredient.setVisible(true)
-            let duration = 40000
-            if (nextIngredient.textureKey === "sanMilaCarne_0" ||
-                nextIngredient.textureKey === "sanMila" ||
-                nextIngredient.textureKey === "pancho" ||
-                nextIngredient.textureKey === "sanBife_0"
+            if (ingredients[0] === null) {
+                const randomIndexPedidosDisponibles = Math.floor(Math.random() * this.availableIngredients.length)
+                this.nextIngredient = new Ingredientes(this.scene, x + 5, y + (20 * i) - 15, this.availableIngredients[randomIndexPedidosDisponibles]);
+            } else {
+                this.nextIngredient = new Ingredientes(this.scene, x + 5, y + (20 * i) - 15, ingredients[i]);
+            }
+
+            this.nextIngredient.done = false;
+            this.nextIngredient.setGrabbed(true)
+            this.itemsHolded.push(this.nextIngredient);
+            this.nextIngredient.setVisible(true)
+            if (this.nextIngredient.textureKey === "sanMilaCarne_0" ||
+                this.nextIngredient.textureKey === "sanMila" ||
+                this.nextIngredient.textureKey === "pancho" ||
+                this.nextIngredient.textureKey === "sanBife_0"
             ) {
 
                 this.taskDuration += duration * 2;
@@ -81,7 +91,7 @@ export class Task extends Interactuables {
                         const itemRef = player.itemHolded;
                         player.holdingSM.changeState("none", { player: player })
                         itemRef.destroy()
-                        this.scene.pedidoEntregadoAudio.play({
+                        this.audio.pedidoEntregadoAudio.play({
                             volume: 0.5, // Ajusta el volumen
                             rate: 1    // Ajusta el pitch
                         });
@@ -128,7 +138,7 @@ export class Task extends Interactuables {
             this.scene.registry.set(`vsPoints${playerId}`, this.scene.registry.get(`vsPoints${playerId}`) + 20 * this.ingredientAmount);
             this.scene.scene.get("HUD").updatePoints()
         }
-        this.scene.dineroAudio.play({
+        this.audio.dineroAudio.play({
             volume: 0.5, // Ajusta el volumen
             rate: Phaser.Math.FloatBetween(.8, 1.4)   // Ajusta el pitch
         });
@@ -150,6 +160,7 @@ export class Task extends Interactuables {
 
         this.circleTimer.circle.destroy();
         this.timerText.destroy();
+        this.zoneLayout.destroy()
         this.destroy()
     }
 }

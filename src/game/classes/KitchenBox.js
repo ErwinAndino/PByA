@@ -8,6 +8,7 @@ export class KitchenBox extends Interactuables {
         super(scene, x, y, textureKey, size, frame);
 
         this.scene = scene;
+        this.audio = this.scene.scene.get("Preloader");
         this.textureKey = textureKey;
         this.aparatoAccepts = this.scene.aparatosAtlas[this.textureKey].accepts;
         this.holdingItem = false;
@@ -22,15 +23,13 @@ export class KitchenBox extends Interactuables {
         this.actionFinish = null;
         this.textureOn = this.textureKey;
         if (textureKey === "mesa") {
-            this.actionSound = this.scene.picarAudio
-            this.actionFinish = this.scene.picarListoAudio;
+            this.actionSound = this.audio.picarAudio
+            this.actionFinish = this.audio.picarListoAudio;
             if (tabla === 1) {
                 scene.add.image(x, y, "tablaCortar");
                 this.cortar = true;
             }
         } else if (textureKey === "freidora") {
-            this.actionSound = this.scene.fritarAudio
-            this.actionFinish = this.scene.coccionListoAudio;
             this.textureOn = "freidoraOn"
         }
 
