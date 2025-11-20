@@ -3,6 +3,7 @@ import Phaser from "phaser";
 import { auth } from "../../utils/firebase/config"; 
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { GithubAuthProvider } from "firebase/auth";
 
 export class RegisterScene extends Phaser.Scene {
     constructor() {
@@ -38,7 +39,7 @@ export class RegisterScene extends Phaser.Scene {
             color: "#ff6961" // Rojo suave
         }).setOrigin(.5);
 
-        this.googleBtn = this.add.text(width/2, 250, "Continuar con Google", {
+        this.googleBtn = this.add.text(width/4, 250, "Continuar con Google", {
             fontFamily: "Arial",
             fontSize: "24px",
             color: "#ffffff",
@@ -47,6 +48,17 @@ export class RegisterScene extends Phaser.Scene {
         }).setOrigin(.5)
         .setInteractive({ useHandCursor: true })
         .on("pointerdown", () => this.loginWithGoogle());
+
+        this.githubBtn = this.add.text(width*(3/4), 250, "Continuar con GitHub", {
+            fontFamily: "Arial",
+            fontSize: "24px",
+            color: "#ffffff",
+            backgroundColor: "#24292E", // color GitHub
+            padding: { x: 10, y: 10 }
+        })
+        .setOrigin(.5)
+        .setInteractive({ useHandCursor: true })
+        .on("pointerdown", () => this.loginWithGithub());
     }
 
     async loginWithGoogle() {
@@ -68,6 +80,27 @@ export class RegisterScene extends Phaser.Scene {
             }
         }
     }
+
+    async loginWithGithub() {
+        const provider = new GithubAuthProvider();
+
+        try {
+            const result = await signInWithPopup(auth, provider);
+
+            console.log("Login con GitHub OK:", result.user.email);
+
+            this.cleanInputs();
+            this.input.keyboard.manager.preventDefault = true;
+            this.scene.start("MainMenu");
+
+        } catch (error) {
+            console.error("Error GitHub:", error.message);
+            if (this.errorText) {
+                this.errorText.setText("Error con GitHub: " + error.message);
+            }
+        }
+    }
+
 
     createInputs() {
         // CONTENEDOR

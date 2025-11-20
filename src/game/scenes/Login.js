@@ -3,6 +3,7 @@ import Phaser from "phaser";
 import { auth } from "../../utils/firebase/config";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { GithubAuthProvider } from "firebase/auth";
 
 export class LoginScene extends Phaser.Scene {
     constructor() {
@@ -35,7 +36,7 @@ export class LoginScene extends Phaser.Scene {
         }).setOrigin(0.5);
 
         // Botón Google
-        this.googleBtn = this.add.text(width / 2, 250, "Continuar con Google", {
+        this.googleBtn = this.add.text(width / 4, 250, "Continuar con Google", {
             fontFamily: "Arial",
             fontSize: "24px",
             color: "#ffffff",
@@ -45,7 +46,38 @@ export class LoginScene extends Phaser.Scene {
         .setOrigin(0.5)
         .setInteractive({ useHandCursor: true })
         .on("pointerdown", () => this.loginWithGoogle());
+
+        // Botón GitHub
+        this.githubBtn = this.add.text(width*(3/4), 250, "Continuar con GitHub", {
+            fontFamily: "Arial",
+            fontSize: "24px",
+            color: "#ffffff",
+            backgroundColor: "#24292e", // color GitHub
+            padding: { x: 10, y: 10 }
+        })
+        .setOrigin(0.5)
+        .setInteractive({ useHandCursor: true })
+        .on("pointerdown", () => this.loginWithGitHub());
     }
+
+    async loginWithGitHub() {
+        const provider = new GithubAuthProvider();
+
+        try {
+            const result = await signInWithPopup(auth, provider);
+
+            console.log("Login GitHub ok:", result.user.email);
+
+            this.cleanInputs();
+            this.input.keyboard.manager.preventDefault = true;
+            this.scene.start("MainMenu");
+
+        } catch (error) {
+            console.error("GitHub login error:", error.message);
+            this.errorText.setText("Error GitHub: " + error.message);
+        }
+    }
+
 
     async loginWithGoogle() {
         const provider = new GoogleAuthProvider();
