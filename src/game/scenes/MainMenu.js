@@ -4,6 +4,9 @@ import { FETCHED, FETCHING, READY, TODO } from "../../utils/enums/status";
 import { getTranslations, getPhrase, getLanguageConfig } from "../../utils/Translations";
 import keys from "../../utils/enums/keys";
 import LanguageSelector from "../classes/LanguageSelector.js";
+import { auth } from "../../utils/firebase/config.js";
+import { signOut } from "firebase/auth";
+
 export class MainMenu extends Phaser.Scene {
 
     #wasChangedLanguage = TODO;
@@ -28,8 +31,6 @@ export class MainMenu extends Phaser.Scene {
         this.language = this.language || ES;
 
         this.isInputLocked = false;
-
-
 
         this.inputSystem = new InputSystem(this.input);
         this.inputSystem.configureKeyboard({
@@ -57,7 +58,25 @@ export class MainMenu extends Phaser.Scene {
 
         this.add.image(320, 180, "menuBG")
 
-        this.menuText = this.add.text(width / 10, height / 7, "MENÚ", {
+        const user = auth.currentUser;
+
+        if (user) {
+            const email = user.email;
+
+            this.add.text(width / 2, 15, `Logeado como: ${email}`, {
+                fontFamily: "Arial",
+                fontSize: "22px",
+                color: "#ffffff"
+            }).setOrigin(0.5);
+        } else {
+            this.add.text(width / 2, 15, "No hay usuario logeado", {
+                fontFamily: "Arial",
+                fontSize: "22px",
+                color: "#ff0d00ff"
+            }).setOrigin(0.5);
+        }
+
+        this.menuText = this.add.text(width / 10, height / 7, "MENU", {
             fontSize: "50px",
             color: "#000000",
             fontFamily: "MyFont",
@@ -154,6 +173,9 @@ export class MainMenu extends Phaser.Scene {
         // posicion del highlight inicial
         this.selector = 3
         this.highlightText()
+        this.RegisterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B);
+        this.LoginKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.N);
+        this.LogoutKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
     }
 
     update() {
@@ -170,6 +192,18 @@ export class MainMenu extends Phaser.Scene {
         // Si el input está bloqueado, no procesar nada
         if (this.isInputLocked) return;
 
+        if (Phaser.Input.Keyboard.JustDown(this.RegisterKey)) {
+            this.sound.stopAll();
+            this.scene.start("Register");
+        }
+        if (Phaser.Input.Keyboard.JustDown(this.LoginKey)) {
+            this.sound.stopAll();
+            this.scene.start("Login");
+        }
+        if (Phaser.Input.Keyboard.JustDown(this.LogoutKey)) {
+            this.logout()
+        }
+        
         if (this.selector === 0 && this.languageSelector.active) {
             // mover entre banderas con A/D o Flechas
             if (this.inputSystem.isJustPressed(INPUT_ACTIONS.LEFT, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.LEFT, "player2")) {
@@ -197,7 +231,7 @@ export class MainMenu extends Phaser.Scene {
                 console.log("PA BAJO")
                 this.selector = Math.max(0, this.selector - 1)
                 this.highlightText()
-
+                
             }
         }
 
@@ -211,8 +245,8 @@ export class MainMenu extends Phaser.Scene {
                 } else {
                     this.scene.start("Load", { nextScene: "Game" });
                 }
-
-
+                
+                
             }
             if (this.selector === 2) { // VERSUS
                 this.registry.set("mode", 2);
@@ -221,17 +255,17 @@ export class MainMenu extends Phaser.Scene {
                 } else {
                     this.scene.start("Load", { nextScene: "Game" });
                 }
-
+                
             }
             if (this.selector === 1) {// SCOREBOARD
             }
             if (this.selector === 0) { // LANGUAGE
                 this.languageActive = true
                 this.languageSelector.toggleArrows()
-
+                
             }
         }
-
+        
     }
     highlightText() {
         this.coopText.setColor("#fff");
@@ -248,6 +282,17 @@ export class MainMenu extends Phaser.Scene {
     updateWasChangedLanguage = () => {
         this.#wasChangedLanguage = FETCHED;
     };
+    
+    async logout() {
+        try {
+            await signOut(auth);
+            console.log("Sesión cerrada");
+
+            this.scene.start("MainMenu"); // O la escena que quieras
+        } catch (error) {
+            console.error("Error al cerrar sesión:", error.message);
+        }
+    }
 
     async getTranslations(language) {
         this.language = language;
@@ -257,7 +302,7 @@ export class MainMenu extends Phaser.Scene {
         // Bloquea el input mientras se cargan las traducciones
         this.isInputLocked = true;
         this.cameras.main.setAlpha(0.5);
-
+        
         this.loaderSprite = this.add.sprite(width / 2, height / 2 + 130, "campana").setScale(2);
         this.tweens.add({
             targets: this.loaderSprite,
