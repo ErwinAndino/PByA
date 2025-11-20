@@ -57,7 +57,7 @@ export class MainMenu extends Phaser.Scene {
 
         this.add.image(320, 180, "menuBG")
 
-        this.menuText = this.add.text(width / 10, height / 7, "MENU", {
+        this.menuText = this.add.text(width / 10, height / 7, "MENÚ", {
             fontSize: "50px",
             color: "#000000",
             fontFamily: "MyFont",
@@ -65,7 +65,7 @@ export class MainMenu extends Phaser.Scene {
             strokeThickness: 4,
         }).setOrigin(0);
 
-        this.menuText.angle = -5
+        this.menuText.angle = -3
 
         //Titulo PByA
         this.polloText = this.add.text(width / 9, height / 3.7, "POLLO", {
@@ -129,22 +129,31 @@ export class MainMenu extends Phaser.Scene {
 
         this.westText.angle = 15
 
+
+        // language selector
+
         this.languageActive = false
 
-        this.selector = 3
-        this.highlightText()
+
         console.log(this.language)
         const langs = [
-            { key: "freidora", code: ES },
-            { key: "brasero", code: EN },
+            { key: "banderaES", code: ES },
+            { key: "banderaEN", code: EN },
         ];
-        this.languageSelector = new LanguageSelector(this, 220, 260, langs, this.language, (langCode) => {
-            console.log("Idioma cambiado a:", langCode);
-            this.getTranslations(langCode)
-            localStorage.setItem("language", langCode); // ✅ Guarda el idioma actual
-            // Acá podrías guardar la preferencia en localStorage, etc.
+        this.languageSelector = new LanguageSelector(this, 215, 260, langs, this.language, (langCode) => {
+            console.log("Intentando cambiar idioma a: ", langCode);
+            if (this.language !== langCode) {
+                this.getTranslations(langCode)
+                localStorage.setItem("language", langCode);
+                console.log("Idioma cambiado a:", langCode);
+            }
+
         });
         this.languageSelector.setLanguage(this.language);
+
+        // posicion del highlight inicial
+        this.selector = 3
+        this.highlightText()
     }
 
     update() {
@@ -162,19 +171,21 @@ export class MainMenu extends Phaser.Scene {
         if (this.isInputLocked) return;
 
         if (this.selector === 0 && this.languageSelector.active) {
-            // mover entre banderas con A/D
-            if (this.inputSystem.isJustPressed(INPUT_ACTIONS.LEFT, "player1")) {
+            // mover entre banderas con A/D o Flechas
+            if (this.inputSystem.isJustPressed(INPUT_ACTIONS.LEFT, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.LEFT, "player2")) {
                 this.languageSelector.changeLanguage(-1);
             }
-            if (this.inputSystem.isJustPressed(INPUT_ACTIONS.RIGHT, "player1")) {
+            if (this.inputSystem.isJustPressed(INPUT_ACTIONS.RIGHT, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.RIGHT, "player2")) {
                 this.languageSelector.changeLanguage(1);
             }
 
-            // confirmar idioma con Z
-            if (this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player1")) {
+            // confirmar idioma con Z o J
+            if (this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player2")) {
                 this.languageSelector.confirmSelection();
             }
         }
+
+        // Si no esta activo el language dejar mover arriba y abajo
 
         if (!this.languageActive) {
             if (this.inputSystem.isJustPressed(INPUT_ACTIONS.UP, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.UP, "player2")) {
@@ -189,6 +200,8 @@ export class MainMenu extends Phaser.Scene {
 
             }
         }
+
+        // selección 
         if (this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player2")) {
             console.log("SI SI SI SI")
             if (this.selector === 3) { // COOP
@@ -241,7 +254,7 @@ export class MainMenu extends Phaser.Scene {
         this.#wasChangedLanguage = FETCHING;
         const { width, height } = this.scale;
 
-        // 🔒 Bloquea el input mientras se cargan las traducciones
+        // Bloquea el input mientras se cargan las traducciones
         this.isInputLocked = true;
         this.cameras.main.setAlpha(0.5);
 
@@ -266,7 +279,6 @@ export class MainMenu extends Phaser.Scene {
             onComplete: () => {
                 this.loaderSprite.destroy()
                 this.cameras.main.setAlpha(1);
-                // 🔓 Desbloquea cuando termina de cargar
                 this.isInputLocked = false;
                 this.languageActive = false;
             }
