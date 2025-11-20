@@ -84,7 +84,7 @@ export class MainMenu extends Phaser.Scene {
             strokeThickness: 4,
         }).setOrigin(0);
 
-        this.menuText.angle = -3
+        this.menuText.angle = -5
 
         //Titulo PByA
         this.polloText = this.add.text(width / 9, height / 3.7, "POLLO", {
