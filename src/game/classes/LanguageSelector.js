@@ -11,16 +11,14 @@ export default class LanguageSelector extends Phaser.GameObjects.Container {
         if (actualLanguage === "es") this.currentIndex = 0
         if (actualLanguage === "en") this.currentIndex = 1
         // === Crear elementos ===
-        this.flag = scene.add.image(0, 0, this.languages[this.currentIndex].key).setScale(0.5);
-        // this.arrowLeft = scene.add.image(-10, 0, "heart").setScale(0.4).setVisible(false);
-        // this.arrowRight = scene.add.image(10, 0, "heart").setScale(0.4).setVisible(false);
+
+        this.flag = scene.add.image(0, 0, this.languages[this.currentIndex].key).setScale(1);
         this.arrowLeft = scene.add.text(-20, 0, "<", {
             fontSize: "24px",
             color: "#fff",
             fontFamily: "MyFont"
         }
         ).setOrigin(0.5).setVisible(false);
-        // this.arrowLeft.angle = -5;
 
         this.arrowRight = scene.add.text(20, 0, ">", {
             fontSize: "24px",
@@ -28,7 +26,6 @@ export default class LanguageSelector extends Phaser.GameObjects.Container {
             fontFamily: "MyFont"
         }
         ).setOrigin(0.5).setVisible(false);
-        // this.arrowRight.angle = -5;
 
         this.add([this.flag, this.arrowLeft, this.arrowRight]);
         scene.add.existing(this);
@@ -75,7 +72,7 @@ export default class LanguageSelector extends Phaser.GameObjects.Container {
         // animación de confirmación
         this.scene.tweens.add({
             targets: this.flag,
-            scale: { from: 0.5, to: 0.6 },
+            scale: { from: 1, to: 1.1 },
             yoyo: true,
             duration: 150
         });
@@ -85,7 +82,7 @@ export default class LanguageSelector extends Phaser.GameObjects.Container {
         if (index !== -1) {
             this.currentIndex = index;
         }
-        this.updateFlagDisplay(this.languages[this.currentIndex]); // tu método que cambia la bandera visible
+        this.updateFlagDisplay(this.languages[this.currentIndex]);
     }
     updateFlagDisplay(currentLang) {
         // animación del cambio de bandera
