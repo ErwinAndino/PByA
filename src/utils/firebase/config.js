@@ -16,7 +16,7 @@ import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
 
-  apiKey: "AIzaSyBGyRawT5dcy1Ba7Hy7BVTS8xpn-aCTz7o",
+  apiKey: import.meta.env.VITE_APIKEY,
 
   authDomain: "pollo-bifes-y-achicoria.firebaseapp.com",
 
