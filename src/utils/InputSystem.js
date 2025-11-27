@@ -72,7 +72,7 @@ export default class InputSystem {
      * @private {Object}
      */
     this.mapping = {
-      player1: {
+      player01: {
         // Movimientos direccionales del joystick
         [INPUT_ACTIONS.UP]: {
           keyboard: [], // Sin mapeo por defecto - configurable por el desarrollador
@@ -109,7 +109,7 @@ export default class InputSystem {
           gamepad: [{ type: "button", index: 2 }], // B2 - Botón izquierdo
         },
       },
-      player2: {
+      player02: {
         // Movimientos direccionales del joystick
         [INPUT_ACTIONS.UP]: {
           keyboard: [], // Sin mapeo por defecto - configurable por el desarrollador
@@ -150,8 +150,8 @@ export default class InputSystem {
 
     /** @private {Object} Estados previos de ejes por jugador */
     this.previousAxisStates = {
-      player1: {},
-      player2: {},
+      player01: {},
+      player02: {},
     };
 
     // Inicializar sistemas de entrada
@@ -167,7 +167,7 @@ export default class InputSystem {
    */
   initializeKeyboard() {
     // Crear teclas del teclado para todas las acciones mapeadas de ambos jugadores
-    ["player1", "player2"].forEach((player) => {
+    ["player01", "player02"].forEach((player) => {
       Object.keys(this.mapping[player]).forEach((action) => {
         const keyboardMappings = this.mapping[player][action].keyboard;
         keyboardMappings.forEach((key) => {
@@ -271,15 +271,15 @@ export default class InputSystem {
    * @param {Object} config - Objeto de configuración
    * @param {Array} [config.keyboard] - Array de códigos de tecla o strings
    * @param {Array} [config.gamepad] - Array de configuraciones de gamepad (no recomendado modificar)
-   * @param {string} [player='player1'] - Jugador al que se aplica el mapeo ('player1' o 'player2')
+   * @param {string} [player='player01'] - Jugador al que se aplica el mapeo ('player01' o 'player02')
    *
    * @example
    * // Configurar solo teclado para jugador 1 (recomendado)
    * inputSystem.setMapping(INPUT_ACTIONS.NORTH, {
    *   keyboard: [Phaser.Input.Keyboard.KeyCodes.SPACE, 'ENTER']
-   * }, 'player1');
+   * }, 'player01');
    */
-  setMapping(action, config, player = "player1") {
+  setMapping(action, config, player = "player01") {
     if (!this.mapping[player]) return;
 
     if (config.keyboard) {
@@ -302,15 +302,15 @@ export default class InputSystem {
    * Método conveniente para configurar varios controles simultáneamente
    *
    * @param {Object} mappings - Objeto con múltiples configuraciones de acciones
-   * @param {string} [player='player1'] - Jugador al que se aplican los mapeos ('player1' o 'player2')
+   * @param {string} [player='player01'] - Jugador al que se aplican los mapeos ('player01' o 'player02')
    *
    * @example
    * inputSystem.setMappings({
    *   [INPUT_ACTIONS.NORTH]: { keyboard: ['SPACE'] },
    *   [INPUT_ACTIONS.SOUTH]: { keyboard: ['X'] },
-   * }, 'player1');
+   * }, 'player01');
    */
-  setMappings(mappings, player = "player1") {
+  setMappings(mappings, player = "player01") {
     Object.keys(mappings).forEach((action) => {
       this.setMapping(action, mappings[action], player);
     });
@@ -321,17 +321,17 @@ export default class InputSystem {
    * Combina la entrada de teclado y gamepad (OR lógico)
    *
    * @param {string} action - La acción a verificar (usar INPUT_ACTIONS constantes)
-   * @param {string} [player='player1'] - Jugador a verificar ('player1' o 'player2')
+   * @param {string} [player='player01'] - Jugador a verificar ('player01' o 'player02')
    * @returns {boolean} true si la acción está siendo presionada
    *
    * @example
    * // En el método update() de una escena
-   * if (inputSystem.isPressed(INPUT_ACTIONS.NORTH, 'player1')) {
+   * if (inputSystem.isPressed(INPUT_ACTIONS.NORTH, 'player01')) {
    *   // Acción continua mientras se mantiene presionado
    *   player.jump();
    * }
    */
-  isPressed(action, player = "player1") {
+  isPressed(action, player = "player01") {
     return (
       this.isKeyboardPressed(action, player) ||
       this.isGamepadPressed(action, player)
@@ -343,17 +343,17 @@ export default class InputSystem {
    * Útil para acciones que deben ejecutarse una sola vez por pulsación
    *
    * @param {string} action - La acción a verificar (usar INPUT_ACTIONS constantes)
-   * @param {string} [player='player1'] - Jugador a verificar ('player1' o 'player2')
+   * @param {string} [player='player01'] - Jugador a verificar ('player01' o 'player02')
    * @returns {boolean} true si la acción fue presionada en este frame
    *
    * @example
    * // En el método update() de una escena
-   * if (inputSystem.isJustPressed(INPUT_ACTIONS.SOUTH, 'player1')) {
+   * if (inputSystem.isJustPressed(INPUT_ACTIONS.SOUTH, 'player01')) {
    *   // Acción única por pulsación
    *   openMenu();
    * }
    */
-  isJustPressed(action, player = "player1") {
+  isJustPressed(action, player = "player01") {
     return (
       this.isKeyboardJustPressed(action, player) ||
       this.isGamepadJustPressed(action, player)
@@ -366,10 +366,10 @@ export default class InputSystem {
    *
    * @private
    * @param {string} action - La acción a verificar
-   * @param {string} [player='player1'] - Jugador a verificar
+   * @param {string} [player='player01'] - Jugador a verificar
    * @returns {boolean} true si está presionada via teclado
    */
-  isKeyboardPressed(action, player = "player1") {
+  isKeyboardPressed(action, player = "player01") {
     if (
       !this.mapping[player] ||
       !this.mapping[player][action] ||
@@ -389,10 +389,10 @@ export default class InputSystem {
    *
    * @private
    * @param {string} action - La acción a verificar
-   * @param {string} [player='player1'] - Jugador a verificar
+   * @param {string} [player='player01'] - Jugador a verificar
    * @returns {boolean} true si fue presionada via teclado en este frame
    */
-  isKeyboardJustPressed(action, player = "player1") {
+  isKeyboardJustPressed(action, player = "player01") {
     if (
       !this.mapping[player] ||
       !this.mapping[player][action] ||
@@ -413,11 +413,11 @@ export default class InputSystem {
    *
    * @private
    * @param {string} action - La acción a verificar
-   * @param {string} [player='player1'] - Jugador a verificar ('player1' o 'player2')
+   * @param {string} [player='player01'] - Jugador a verificar ('player01' o 'player02')
    * @returns {boolean} true si está presionada via gamepad
    */
-  isGamepadPressed(action, player = "player1") {
-    const gamepad = player === "player1" ? this.gamepad1 : this.gamepad2;
+  isGamepadPressed(action, player = "player01") {
+    const gamepad = player === "player01" ? this.gamepad1 : this.gamepad2;
 
     if (
       !gamepad ||
@@ -447,56 +447,56 @@ export default class InputSystem {
    *
    * @private
    * @param {string} action - La acción a verificar
-   * @param {string} [player='player1'] - Jugador a verificar ('player1' o 'player2')
+   * @param {string} [player='player01'] - Jugador a verificar ('player01' o 'player02')
    * @returns {boolean} true si fue presionada via gamepad en este frame
    */
-isGamepadJustPressed(action, player = "player1") {
-  const gamepad = player === "player1" ? this.gamepad1 : this.gamepad2;
+  isGamepadJustPressed(action, player = "player01") {
+    const gamepad = player === "player01" ? this.gamepad1 : this.gamepad2;
 
-  if (
-    !gamepad ||
-    !this.mapping[player] ||
-    !this.mapping[player][action] ||
-    !this.mapping[player][action].gamepad
-  )
-    return false;
+    if (
+      !gamepad ||
+      !this.mapping[player] ||
+      !this.mapping[player][action] ||
+      !this.mapping[player][action].gamepad
+    )
+      return false;
 
-  if (!this.previousButtonStates) this.previousButtonStates = {};
-  if (!this.previousButtonStates[player]) this.previousButtonStates[player] = {};
+    if (!this.previousButtonStates) this.previousButtonStates = {};
+    if (!this.previousButtonStates[player]) this.previousButtonStates[player] = {};
 
-  return this.mapping[player][action].gamepad.some((input) => {
-    if (input.type === "button") {
-      const button = gamepad.buttons[input.index];
-      if (!button) return false;
+    return this.mapping[player][action].gamepad.some((input) => {
+      if (input.type === "button") {
+        const button = gamepad.buttons[input.index];
+        if (!button) return false;
 
-      const pressedNow = button.pressed || button.value > 0.5;
-      const prevPressed = this.previousButtonStates[player][input.index] || false;
+        const pressedNow = button.pressed || button.value > 0.5;
+        const prevPressed = this.previousButtonStates[player][input.index] || false;
 
-      // Guardar estado actual para el próximo frame
-      this.previousButtonStates[player][input.index] = pressedNow;
+        // Guardar estado actual para el próximo frame
+        this.previousButtonStates[player][input.index] = pressedNow;
 
-      // Solo retorna true cuando cambia de no presionado → presionado
-      return pressedNow && !prevPressed;
-    }
+        // Solo retorna true cuando cambia de no presionado → presionado
+        return pressedNow && !prevPressed;
+      }
 
-    if (input.type === "axis") {
-      const axisValue = gamepad.axes[input.index].getValue();
-      const threshold = 0.5;
-      const isPressed = input.dir > 0 ? axisValue > threshold : axisValue < -threshold;
-      const stateKey = `axis_${input.index}_${input.dir}`;
+      if (input.type === "axis") {
+        const axisValue = gamepad.axes[input.index].getValue();
+        const threshold = 0.5;
+        const isPressed = input.dir > 0 ? axisValue > threshold : axisValue < -threshold;
+        const stateKey = `axis_${input.index}_${input.dir}`;
 
-      this.previousAxisStates ??= {};
-      this.previousAxisStates[player] ??= {};
+        this.previousAxisStates ??= {};
+        this.previousAxisStates[player] ??= {};
 
-      const wasPressed = this.previousAxisStates[player][stateKey];
-      this.previousAxisStates[player][stateKey] = isPressed;
+        const wasPressed = this.previousAxisStates[player][stateKey];
+        this.previousAxisStates[player][stateKey] = isPressed;
 
-      return isPressed && !wasPressed;
-    }
+        return isPressed && !wasPressed;
+      }
 
-    return false;
-  });
-}
+      return false;
+    });
+  }
 
 
   /**
@@ -519,7 +519,7 @@ isGamepadJustPressed(action, player = "player1") {
    * Método principal para personalización de controles
    *
    * @param {Object} keyboardMappings - Objeto con mapeo de acción -> teclas
-   * @param {string} [player='player1'] - Jugador al que se aplican los mapeos ('player1' o 'player2')
+   * @param {string} [player='player01'] - Jugador al que se aplican los mapeos ('player01' o 'player02')
    *
    * @example
    * // Configuración para jugador 1
@@ -528,7 +528,7 @@ isGamepadJustPressed(action, player = "player1") {
    *   [INPUT_ACTIONS.SOUTH]: [Phaser.Input.Keyboard.KeyCodes.S],
    *   [INPUT_ACTIONS.LEFT]: [Phaser.Input.Keyboard.KeyCodes.A],
    *   [INPUT_ACTIONS.RIGHT]: [Phaser.Input.Keyboard.KeyCodes.D]
-   * }, 'player1');
+   * }, 'player01');
    *
    * // Configuración para jugador 2
    * inputSystem.configureKeyboard({
@@ -536,9 +536,9 @@ isGamepadJustPressed(action, player = "player1") {
    *   [INPUT_ACTIONS.SOUTH]: [Phaser.Input.Keyboard.KeyCodes.DOWN],
    *   [INPUT_ACTIONS.LEFT]: [Phaser.Input.Keyboard.KeyCodes.LEFT],
    *   [INPUT_ACTIONS.RIGHT]: [Phaser.Input.Keyboard.KeyCodes.RIGHT]
-   * }, 'player2');
+   * }, 'player02');
    */
-  configureKeyboard(keyboardMappings, player = "player1") {
+  configureKeyboard(keyboardMappings, player = "player01") {
     if (!this.mapping[player]) return;
 
     Object.keys(keyboardMappings).forEach((action) => {
@@ -561,7 +561,7 @@ isGamepadJustPressed(action, player = "player1") {
    * Método más conveniente para configuración rápida
    *
    * @param {Object} keyboardMappings - Objeto con mapeo de acción -> strings de teclas
-   * @param {string} [player='player1'] - Jugador al que se aplican los mapeos ('player1' o 'player2')
+   * @param {string} [player='player01'] - Jugador al que se aplican los mapeos ('player01' o 'player02')
    *
    * @example
    * // Configuración para jugador 1
@@ -570,7 +570,7 @@ isGamepadJustPressed(action, player = "player1") {
    *   [INPUT_ACTIONS.SOUTH]: ['S'],
    *   [INPUT_ACTIONS.EAST]: ['D'],
    *   [INPUT_ACTIONS.WEST]: ['A']
-   * }, 'player1');
+   * }, 'player01');
    *
    * // Configuración para jugador 2
    * inputSystem.configureKeyboardByString({
@@ -578,9 +578,9 @@ isGamepadJustPressed(action, player = "player1") {
    *   [INPUT_ACTIONS.SOUTH]: ['DOWN'],
    *   [INPUT_ACTIONS.EAST]: ['RIGHT'],
    *   [INPUT_ACTIONS.WEST]: ['LEFT']
-   * }, 'player2');
+   * }, 'player02');
    */
-  configureKeyboardByString(keyboardMappings, player = "player1") {
+  configureKeyboardByString(keyboardMappings, player = "player01") {
     const convertedMappings = {};
 
     Object.keys(keyboardMappings).forEach((action) => {
@@ -599,14 +599,14 @@ isGamepadJustPressed(action, player = "player1") {
    * Útil para mostrar controles actuales al usuario
    *
    * @param {string} action - El nombre de la acción
-   * @param {string} [player='player1'] - Jugador a consultar ('player1' o 'player2')
+   * @param {string} [player='player01'] - Jugador a consultar ('player01' o 'player02')
    * @returns {Array} Array de teclas asignadas a esta acción
    *
    * @example
-   * const jumpKeys = inputSystem.getKeyboardMapping(INPUT_ACTIONS.NORTH, 'player1');
+   * const jumpKeys = inputSystem.getKeyboardMapping(INPUT_ACTIONS.NORTH, 'player01');
    * console.log('Teclas para saltar del jugador 1:', jumpKeys);
    */
-  getKeyboardMapping(action, player = "player1") {
+  getKeyboardMapping(action, player = "player01") {
     return this.mapping[player] &&
       this.mapping[player][action] &&
       this.mapping[player][action].keyboard
@@ -618,17 +618,17 @@ isGamepadJustPressed(action, player = "player1") {
    * Obtiene todos los mapeos de teclado actuales de un jugador
    * Útil para generar una pantalla de configuración de controles
    *
-   * @param {string} [player='player1'] - Jugador a consultar ('player1' o 'player2')
+   * @param {string} [player='player01'] - Jugador a consultar ('player01' o 'player02')
    * @returns {Object} Objeto con todos los mapeos de teclado
    *
    * @example
-   * const player1Mappings = inputSystem.getAllKeyboardMappings('player1');
+   * const player1Mappings = inputSystem.getAllKeyboardMappings('player01');
    * // Mostrar en UI de configuración
    * Object.keys(player1Mappings).forEach(action => {
    *   console.log(`${action}: ${player1Mappings[action].join(', ')}`);
    * });
    */
-  getAllKeyboardMappings(player = "player1") {
+  getAllKeyboardMappings(player = "player01") {
     if (!this.mapping[player]) return {};
 
     const keyboardMappings = {};
@@ -641,16 +641,16 @@ isGamepadJustPressed(action, player = "player1") {
   /**
    * Verifica si un gamepad está conectado para un jugador específico
    *
-   * @param {string} [player='player1'] - Jugador a verificar ('player1' o 'player2')
+   * @param {string} [player='player01'] - Jugador a verificar ('player01' o 'player02')
    * @returns {boolean} true si el gamepad está conectado
    *
    * @example
-   * if (inputSystem.isGamepadConnected('player1')) {
+   * if (inputSystem.isGamepadConnected('player01')) {
    *   console.log('Gamepad del jugador 1 está conectado');
    * }
    */
-  isGamepadConnected(player = "player1") {
-    return player === "player1"
+  isGamepadConnected(player = "player01") {
+    return player === "player01"
       ? this.gamepad1 !== null
       : this.gamepad2 !== null;
   }
@@ -658,17 +658,17 @@ isGamepadJustPressed(action, player = "player1") {
   /**
    * Obtiene información del gamepad conectado para un jugador
    *
-   * @param {string} [player='player1'] - Jugador a consultar ('player1' o 'player2')
+   * @param {string} [player='player01'] - Jugador a consultar ('player01' o 'player02')
    * @returns {Object|null} Información del gamepad o null si no está conectado
    *
    * @example
-   * const gamepadInfo = inputSystem.getGamepadInfo('player1');
+   * const gamepadInfo = inputSystem.getGamepadInfo('player01');
    * if (gamepadInfo) {
    *   console.log('Gamepad:', gamepadInfo.id);
    * }
    */
-  getGamepadInfo(player = "player1") {
-    const gamepad = player === "player1" ? this.gamepad1 : this.gamepad2;
+  getGamepadInfo(player = "player01") {
+    const gamepad = player === "player01" ? this.gamepad1 : this.gamepad2;
     if (!gamepad) return null;
 
     return {
@@ -682,15 +682,15 @@ isGamepadJustPressed(action, player = "player1") {
    * Método de debug para ver el estado de todos los botones del gamepad
    * Útil para identificar qué índices de botones están siendo presionados
    *
-   * @param {string} [player='player1'] - Jugador a consultar ('player1' o 'player2')
+   * @param {string} [player='player01'] - Jugador a consultar ('player01' o 'player02')
    * @returns {Object} Estado de todos los botones y ejes
    *
    * @example
-   * const debug = inputSystem.debugGamepad('player1');
+   * const debug = inputSystem.debugGamepad('player01');
    * console.log('Botones presionados:', debug.pressedButtons);
    */
-  debugGamepad(player = "player1") {
-    const gamepad = player === "player1" ? this.gamepad1 : this.gamepad2;
+  debugGamepad(player = "player01") {
+    const gamepad = player === "player01" ? this.gamepad1 : this.gamepad2;
     if (!gamepad) return null;
 
     const pressedButtons = [];

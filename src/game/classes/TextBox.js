@@ -9,7 +9,7 @@ export default class TextBox extends Phaser.GameObjects.Container {
         this.speaker = speaker; // sprite a controlar
         this.setDepth(16);
 
-        // Fondo de la caja
+        // Fondo de la box
         this.background = scene.add.rectangle(0, 0, width, height, 0x000000, 0.7)
             .setOrigin(0.5)
             .setStrokeStyle(2, 0xffffff);

@@ -1,6 +1,7 @@
-import InputSystem, { INPUT_ACTIONS } from "../../utils/InputSystem";
 import { getPhrase } from "../../utils/Translations";
 import keys from "../../utils/enums/keys";
+import createInputs from "../../utils/createInputSystem"
+import { INPUT_ACTIONS } from "../../utils/InputSystem"
 
 export class Victory extends Phaser.Scene {
   constructor() {
@@ -27,25 +28,7 @@ export class Victory extends Phaser.Scene {
   create() {
     const { width, height } = this.scale;
 
-    this.inputSystem = new InputSystem(this.input);
-    this.inputSystem.configureKeyboard({
-      [INPUT_ACTIONS.UP]: [Phaser.Input.Keyboard.KeyCodes.W],
-      [INPUT_ACTIONS.DOWN]: [Phaser.Input.Keyboard.KeyCodes.S],
-      [INPUT_ACTIONS.LEFT]: [Phaser.Input.Keyboard.KeyCodes.A],
-      [INPUT_ACTIONS.RIGHT]: [Phaser.Input.Keyboard.KeyCodes.D],
-      [INPUT_ACTIONS.SOUTH]: [Phaser.Input.Keyboard.KeyCodes.X],
-      [INPUT_ACTIONS.EAST]: [Phaser.Input.Keyboard.KeyCodes.C],
-      [INPUT_ACTIONS.WEST]: [Phaser.Input.Keyboard.KeyCodes.Z]
-    }, "player1");
-    this.inputSystem.configureKeyboard({
-      [INPUT_ACTIONS.UP]: [Phaser.Input.Keyboard.KeyCodes.UP],
-      [INPUT_ACTIONS.DOWN]: [Phaser.Input.Keyboard.KeyCodes.DOWN],
-      [INPUT_ACTIONS.LEFT]: [Phaser.Input.Keyboard.KeyCodes.LEFT],
-      [INPUT_ACTIONS.RIGHT]: [Phaser.Input.Keyboard.KeyCodes.RIGHT],
-      [INPUT_ACTIONS.SOUTH]: [Phaser.Input.Keyboard.KeyCodes.K],
-      [INPUT_ACTIONS.EAST]: [Phaser.Input.Keyboard.KeyCodes.L],
-      [INPUT_ACTIONS.WEST]: [Phaser.Input.Keyboard.KeyCodes.J]
-    }, "player2");
+    createInputs(this)
 
     // fondo semi-transparente
     this.add.rectangle(0, 0, width, height, 0x000000, 0.6).setOrigin(0);
@@ -110,21 +93,17 @@ export class Victory extends Phaser.Scene {
 
   update(t, dt) {
 
-    if (this.inputSystem.isJustPressed(INPUT_ACTIONS.UP, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.UP, "player2")) {
-      console.log("PA RRIBA")
+    if (this.inputSystem.isJustPressed(INPUT_ACTIONS.UP, "player01") || this.inputSystem.isJustPressed(INPUT_ACTIONS.UP, "player02")) {
       this.selector = Math.min(1, this.selector + 1)
       this.highlightText()
     }
-    if (this.inputSystem.isJustPressed(INPUT_ACTIONS.DOWN, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.DOWN, "player2")) {
-      console.log("PA BAJO")
+    if (this.inputSystem.isJustPressed(INPUT_ACTIONS.DOWN, "player01") || this.inputSystem.isJustPressed(INPUT_ACTIONS.DOWN, "player02")) {
       this.selector = Math.max(0, this.selector - 1)
       this.highlightText()
 
     }
-    if (this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player2")) {
-      console.log("SI SI SI SI")
+    if (this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player01") || this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player02")) {
       if (this.selector === 1) { // RETRY
-        console.log("De nuevo!")
         this.registry.set("actualLevel", 1);
         if (this.registry.get("mode") === 1) {
           this.registry.set("coopPoints", 0)
@@ -138,7 +117,6 @@ export class Victory extends Phaser.Scene {
         this.scene.launch("HUD");
       }
       if (this.selector === 0) { // MENU
-        console.log("Menu!")
         this.scene.stop("HUD");
         this.scene.stop("Game");
         this.scene.start("MainMenu");

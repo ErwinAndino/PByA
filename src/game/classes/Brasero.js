@@ -3,10 +3,10 @@ import { KitchenBox } from "./KitchenBox";
 
 export class Brasero extends KitchenBox {
     constructor(scene, x, y, size) {
-        const textureKey = "brasero";
+        const textureKey = "brazier";
         super(scene, x, y, textureKey, size);
         this.coalFrame = -1;
-        this.textureCoal = scene.add.sprite(x, y - 25, "nivelCarbon", this.coalFrame); // crea carbon por encima del brasero
+        this.textureCoal = scene.add.sprite(x, y - 25, "coalLevel", this.coalFrame); // crea carbon por encima del brazier
         this.textureCoal.setVisible(false);
         this.scene = scene;
         this.audio = this.scene.scene.get("Preloader");
@@ -20,15 +20,15 @@ export class Brasero extends KitchenBox {
         this.etapaActual = null;
 
         this.hasCoal = false;
-        this.iconoCarbon = scene.add.image(x, y - 25, "iconoCarbon");
-        this.iconoCarbon.setDepth(10);
-        this.iconoCarbon.setVisible(true);
+        this.coalIcon = scene.add.image(x, y - 25, "coalIcon");
+        this.coalIcon.setDepth(10);
+        this.coalIcon.setVisible(true);
         this.timerCoal = 0;
         this.durationCoal = 10000;
-        this.actionSound = this.audio.coccionAudio
-        this.actionFinish = this.audio.coccionListoAudio
+        this.actionSound = this.audio.cookAudio
+        this.actionFinish = this.audio.cookReadyAudio
 
-        this.emitterHumo = this.scene.add.particles(x, y, 'particleHumo', { // humo grande
+        this.emitterHumo = this.scene.add.particles(x, y, 'particleSmoke01', { // humo grande
             frame: [0, 1, 2],
             speedX: { min: -10, max: 10 },
             speedY: { min: -20, max: -40 },
@@ -47,7 +47,7 @@ export class Brasero extends KitchenBox {
             },
         });
 
-        this.emitterHumo2 = this.scene.add.particles(x, y - 25, 'particleHumo2', { // humo chico
+        this.emitterHumo2 = this.scene.add.particles(x, y - 25, 'particleSmoke02', { // humo chico
             frame: [0, 1, 2, 3],
             speedX: { min: -10, max: 10 },
             speedY: { min: -20, max: -40 },
@@ -84,9 +84,7 @@ export class Brasero extends KitchenBox {
 
         // Si el aparato acepta el item
         if (this.aparatoAccepts[player.itemHolded.textureKey]) {
-            console.log("%cEntro por aca", "color: green");
             this.scene.tweens.killTweensOf(player.itemHolded);
-            console.log("se intento poner algo: ", player.itemHolded.dataIngredient);
 
 
 
@@ -96,13 +94,11 @@ export class Brasero extends KitchenBox {
             this.coalFrame = Math.min(4, this.coalFrame + 1);
             this.textureCoal.setFrame(this.coalFrame);
             this.textureCoal.setVisible(true);
-            this.iconoCarbon.setVisible(false); //saca el icono de necesita carbon
+            this.coalIcon.setVisible(false); //saca el exclamationIcon de necesita carbon
             player.holdingSM.changeState("none", { player: player });
             this.itemHolded[0].setPosition(this.body.center.x + 1, this.body.center.y - 21);
             this.itemHolded[0].setVisible(true);
             this.itemHolded[0].setGrabbed(true);
-            console.log("itemHolded array: ", this.itemHolded.length)
-            console.log("itemCooked array: ", this.itemCooked.length)
 
             this.emitterHumo2.frequency = 500 //activa las particulas
             if (!this.circleTimer.active) {
@@ -121,20 +117,16 @@ export class Brasero extends KitchenBox {
 
         player.holdingSM.changeState("ingredient", { player: player, ingredient: this.itemCooked[this.itemCooked.length - 1] }); //agarra el utlimo, que deberia estar cocinado
         this.itemCooked.pop();
-        console.log("itemHolded array: ", this.itemHolded.length)
-        console.log("itemCooked array: ", this.itemCooked.length)
 
         this.coalLevel = Math.max(0, this.coalLevel - 1);
         this.coalFrame = Math.max(0, this.coalFrame - 1);
         this.textureCoal.setFrame(this.coalFrame);
-        console.log(this.coalLevel)
         if (this.coalLevel === 0) {
-            console.log("esta vacio ves?")
             this.itemHolded = [];
             this.itemCooked = [];
             this.holdingItem = false;
             this.textureCoal.setVisible(false);
-            this.iconoCarbon.setVisible(true);
+            this.coalIcon.setVisible(true);
             this.coalFrame = -1;
             this.emitterHumo2.frequency = -1 //desactiva las particulas
         }
@@ -147,7 +139,6 @@ export class Brasero extends KitchenBox {
         if (!puedeCocinar) return;
 
         if (this.itemHolded[0] && this.itemHolded[0].dataIngredient.next && this.itemHolded[0].dataIngredient.next[this.textureKey]) {
-            console.log("%cSe inicia reloj", "color: aqua")
             this.circleTimer.start()
             if (this.actionSound) {
                 this.actionSound.play();
@@ -161,12 +152,8 @@ export class Brasero extends KitchenBox {
         if (this.itemHolded.length > 0) {
             this.itemHolded[0].cook(this.textureKey);
             this.itemCooked.push(this.itemHolded.shift());
-            console.log("NEW COOKED ITEM: ", this.itemCooked[0].dataIngredient)
-            console.log("itemHolded array: ", this.itemHolded.length)
-            console.log("itemCooked array: ", this.itemCooked.length)
         }
         if (this.itemHolded[0] && this.itemHolded[0].dataIngredient.next && this.itemHolded[0].dataIngredient.next[this.textureKey]) {
-            console.log("tiene que arrancar reloj")
             this.circleTimer.start()
         } else {
             if (this.actionSound) {

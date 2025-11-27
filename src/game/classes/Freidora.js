@@ -3,7 +3,7 @@ import { KitchenBox } from "./KitchenBox";
 
 export class Freidora extends KitchenBox {
     constructor(scene, x, y, size, frame) {
-        const textureKey = "freidora";
+        const textureKey = "frier";
         super(scene, x, y, textureKey, size, frame);
         this.scene = scene;
         this.audio = this.scene.scene.get("Preloader");
@@ -14,8 +14,8 @@ export class Freidora extends KitchenBox {
         this.etapas = {};
         this.etapaActual = null;
 
-        this.actionSound = this.audio.fritarAudio
-        this.actionFinish = this.audio.coccionListoAudio
+        this.actionSound = this.audio.fryAudio
+        this.actionFinish = this.audio.cookReadyAudio
 
         this.circleTimer = new CircularTimer(scene, x + 13, y + 13, 6, this.cookDuration, () => { this.finishCook() }, 2)
     }
@@ -37,9 +37,7 @@ export class Freidora extends KitchenBox {
 
         // Si el aparato acepta el item
         if (this.aparatoAccepts[player.itemHolded.textureKey]) {
-            console.log("%cEntro por aca", "color: green");
             this.scene.tweens.killTweensOf(player.itemHolded);
-            console.log("se intento poner algo: ", player.itemHolded.dataIngredient);
 
             this.itemHolded = player.itemHolded;
             this.holdingItem = true;
@@ -48,8 +46,8 @@ export class Freidora extends KitchenBox {
             this.itemHolded.setVisible(true);
             this.itemHolded.setGrabbed(true);
 
-            // si es una mesa y no puede cortar entonces no se cocina
-            if (this.textureKey === "mesa" && !this.cortar) return false;
+            // si es una table y no puede cortar entonces no se cocina
+            if (this.textureKey === "table" && !this.cortar) return false;
             this.startCook();
 
             return true; // compatible
@@ -78,22 +76,17 @@ export class Freidora extends KitchenBox {
             let numeroDeEtapas = 0;
 
             let data = this.itemHolded.dataIngredient
-            console.log("data    ", data)
 
             while (data.next && data.next[this.textureKey]) {
                 numeroDeEtapas++;
 
                 let nextTexture = data.next[this.textureKey];
                 this.etapas[numeroDeEtapas] = nextTexture;
-                console.log("next texture:    ", nextTexture)
 
-                data = this.scene.ingredientesAtlas[nextTexture];
+                data = this.scene.ingredientsAtlas[nextTexture];
             }
 
             this.numeroDeEtapas = numeroDeEtapas;
-            console.log("Numero de etapas:    ", numeroDeEtapas)
-
-            console.log("%cSe inicia reloj", "color: aqua")
             this.circleTimer.start((numeroDeEtapas) * 3000)
             if (this.actionSound) {
                 this.actionSound.play();
@@ -104,7 +97,6 @@ export class Freidora extends KitchenBox {
     finishCook() {
         this.itemHolded.cook(this.textureKey);
         this.actionFinish.play()
-        console.log("NEW COOKED ITEM: ", this.itemHolded.dataIngredient)
         if (this.actionSound) {
             this.actionSound.stop();
         }

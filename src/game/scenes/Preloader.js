@@ -19,12 +19,12 @@ export class Preloader extends Phaser.Scene {
         const height = this.cameras.main.height;
 
         // Paso 1: cargar solo el ícono de carga
-        this.load.image("campana", "SS_Campanilla.png");
+        this.load.image("bell", "SS_Bell.png");
 
 
         this.load.once("complete", () => {
             // Mostrar sprite animado
-            this.loaderSprite = this.add.sprite(width / 2, height / 2 + 130, "campana").setScale(2);
+            this.loaderSprite = this.add.sprite(width / 2, height / 2 + 130, "bell").setScale(2);
             this.tweens.add({
                 targets: this.loaderSprite,
                 scale: 3,
@@ -56,107 +56,102 @@ export class Preloader extends Phaser.Scene {
         this.load.setPath("assets");
 
         //IMAGENES ------------------------------------------
-        this.load.image("background", "BG_Dia_01(1).png");
-        this.load.image("freidora", "SS_Freidora_0.png");
-        this.load.image("freidoraOn", "SS_Freidora_1.png");
-        this.load.image("caja", "SS_Caja.png");
-        this.load.image("orden", "SS_Orden.png");
-        this.load.image("tabla", "SS_Tablones.png");
-        this.load.image("cenizas", "SS_Asador_Cenizas.png");
-        this.load.image("iconoCarbon", "SS_Icono_Carbon.png");
-        this.load.image("iconoCarbonActivado", "SS_Icono_Carbon_Activado.png");
-        this.load.image("tablaCortar", "SS_Tabla.png");
-        this.load.image("zonaEntrega", "SS_Layout Zona Entrega(1).png");
-        this.load.image("libroReceta", "SS_LibroReceta.png");
-        this.load.image("backgroundCaceria", "BG_Noche_01.png");
-        this.load.image("lobo", "Lobison pixelart.png")
+        this.load.image("background", "BG_Day.png");
+        this.load.image("frier", "SS_Frier_01.png");
+        this.load.image("frierOn", "SS_Frier_02.png");
+        this.load.image("box", "SS_Box.png");
+        this.load.image("order", "SS_Order.png");
+        this.load.image("deliverTable", "SS_DeliverTable.png");
+        this.load.image("ash", "SS_Grill_Ash.png");
+        this.load.image("coalIcon", "SS_Icon_Coal.png");
+        this.load.image("iconHotCoal", "SS_Icon_Coal_Hot.png");
+        this.load.image("cuttingBoard", "SS_CuttingBoard.png");
+        this.load.image("deliverZone", "SS_Layout_Deliver_Zone.png");
+        this.load.image("recipeBook", "SS_Recipe_Book.png");
+        this.load.image("backgroundHunt", "BG_Night.png");
         this.load.image("heart", "Heart.png");
-        this.load.image("heart2", "Heart2.png");
-        this.load.image("menuBG", "Menu Principal(1).png");
-        this.load.image("hoja", "hoja.png");
-        this.load.image("indicadorRecetario", "SS_indicador_recetario.png");
-        this.load.image("brasero", "SS_Brasero.png");
-        this.load.image("icono", "SS_Icono_Admiracion.png");
-        this.load.image("banderaEN", "Bandera_EN.png");
-        this.load.image("banderaES", "Bandera_ES.png");
+        this.load.image("Main_Menu", "Main_Menu.png");
+        this.load.image("paper", "paper.png");
+        this.load.image("brazier", "SS_Brazier.png");
+        this.load.image("exclamationIcon", "SS_Icon_Exclamation.png");
+        this.load.image("flagEN", "Flag_EN.png");
+        this.load.image("flagES", "Flag_ES.png");
 
         //AUDIO----------------------------------------
-        this.load.audio("caminar_pasto", "./audio/PByA_PJ_Caminar_Pasto.mp3");
-        this.load.audio("coccion", "./audio/PByA_MT_Parrilla_Coccion.mp3");
-        this.load.audio("picar", "./audio/PByA_MT_Tabla_Cortar.mp3");
-        this.load.audio("picarListo", "./audio/PByA_MT_Tabla_Listo.mp3");
-        this.load.audio("fritar", "./audio/PByA_MT_Freidora_Coccion.mp3");
-        this.load.audio("coccionListo", "./audio/PByA_Coccion.mp3");
+        this.load.audio("playerWalk", "./audio/PByA_PJ_Walk.mp3");
+        this.load.audio("cook", "./audio/PByA_MT_Grill.mp3");
+        this.load.audio("chop", "./audio/PByA_MT_CuttingBoard.mp3");
+        this.load.audio("fry", "./audio/PByA_MT_Frier.mp3");
+        this.load.audio("cookReady", "./audio/PByA_Cook.mp3");
         this.load.audio("dash", "./audio/PByA_PJ_Dash.mp3");
-        this.load.audio("agarrar", "./audio/PByA_Objeto.mp3");
-        this.load.audio("lanzar", "./audio/PByA_Objeto_Lanzar.mp3");
-        this.load.audio("caja", "./audio/PByA_MT_Caja_Abrir.mp3");
-        this.load.audio("pedidoNuevo", "./audio/PByA_Hud_Pedido_Nuevo.mp3");
-        this.load.audio("pedidoEntregado", "./audio/PByA_Hud_Pedido_Entregado.mp3");
-        this.load.audio("dinero", "./audio/PByA_Hud_Dinero.mp3");
-        this.load.audio("tiempoEmpieza", "./audio/PByA_Hud_Tiempo_Empieza.mp3");
-        this.load.audio("tiempoCritico", "./audio/PByA_Hud_Tiempo_Critico.mp3");
-        this.load.audio("tiempoFin", "./audio/PByA_Hud_Tiempo_Fin.mp3");
-        this.load.audio("golpePj", "./audio/PByA_PJ_Ataque_Golpe.mp3");
-        this.load.audio("golpeBoss", "./audio/PByA_Boss_Lobizon_Ataque_Golpe.mp3");
-        this.load.audio("muerteBoss", "./audio/PByA_Boss_Lobizon_Muerte.mp3");
-        this.load.audio("ambienteBoss", "./audio/PByA_Boss_Lobizon_Ambiente.mp3");
-        this.load.audio("musica_cumbia_1", "./audio/music/cumbiesita_1.mp3");
-        this.load.audio("musica_boss_1", "./audio/music/boss musica.mp3");
-        this.load.audio("musicaCuarteto", "./audio/music/Ultimate_Cuarteto.mp3");
-        this.load.audio("musicaChacarera", "./audio/music/Ultimate_Chacarera.mp3");
-        this.load.audio("ambienteCaceria", "./audio/PByA_Ambiente_Caceria_01.mp3");
-        this.load.audio("ambienteCocina", "./audio/PByA_Ambiente_Cocina_01.mp3");
+        this.load.audio("grab", "./audio/PByA_Object.mp3");
+        this.load.audio("throw", "./audio/PByA_Object_Throw.mp3");
+        this.load.audio("box", "./audio/PByA_MT_Box.mp3");
+        this.load.audio("newOrder", "./audio/PByA_Hud_Order_New.mp3");
+        this.load.audio("deliveredOrder", "./audio/PByA_Hud_Order_Delivered.mp3");
+        this.load.audio("money", "./audio/PByA_Hud_Money.mp3");
+        this.load.audio("timeBegin", "./audio/PByA_Hud_Time_Begin.mp3");
+        this.load.audio("timeCritical", "./audio/PByA_Hud_Time_Critical.mp3");
+        this.load.audio("timeEnd", "./audio/PByA_Hud_Time_End.mp3");
+        this.load.audio("playerHit", "./audio/PByA_PJ_Attack_Hit.mp3");
+        this.load.audio("bossHit", "./audio/PByA_Boss_Lobizon_Attack_Hit.mp3");
+        this.load.audio("bossDeath", "./audio/PByA_Boss_Lobizon_Death.mp3");
+        this.load.audio("bossHowl", "./audio/PByA_Boss_Lobizon_Ambient.mp3");
+        this.load.audio("musicKitchen", "./audio/music/Ultimate_Cuarteto.mp3");
+        this.load.audio("musicHunt", "./audio/music/Ultimate_Chacarera.mp3");
+        this.load.audio("huntAmbient", "./audio/PByA_Ambient_Hunt_01.mp3");
+        this.load.audio("kitchenAmbientAudio", "./audio/PByA_Ambient_Kitchen_01.mp3");
+        this.load.audio("musicTutorial", "./audio/music/Ultimate_Chamame.mp3");
 
         //SPRITESHEETS--------------------------------
-        this.load.spritesheet("bossAttack1", "SS_Atack-1.png", { frameWidth: 197, frameHeight: 110 })
-        this.load.spritesheet("bossAttack2", "SS_Atack-2.png", { frameWidth: 197, frameHeight: 110 })
-        this.load.spritesheet("player1", "SS_PJ1(1).png", { frameWidth: 30, frameHeight: 47 })
-        this.load.spritesheet("player2", "SS_PJ2(1).png", { frameWidth: 30, frameHeight: 47 })
-        this.load.spritesheet("player1Attack", "SS_PJ1_Golpe.png", { frameWidth: 41, frameHeight: 47 })
-        this.load.spritesheet("player2Attack", "SS_PJ2_Golpe.png", { frameWidth: 41, frameHeight: 47 })
-        this.load.spritesheet("playerAttackWoosh", "SS_Woosh1_PJ.png", { frameWidth: 40, frameHeight: 30 })
-        this.load.spritesheet("ingredientesAtlas", "SS_Ingredientes(1).png", { frameWidth: 20, frameHeight: 20 })
-        this.load.spritesheet("asador", "SS_Asador.png", { frameWidth: 25, frameHeight: 25 })
-        this.load.spritesheet("brasas", "SS_Asador_Brasas.png", { frameWidth: 32, frameHeight: 32 })
-        this.load.spritesheet("mesa", "SS_Mesa.png", { frameWidth: 25, frameHeight: 25 })
-        this.load.spritesheet("recetario1", "SS_Recetario_lvl1.png", { frameWidth: 206, frameHeight: 102 })
-        this.load.spritesheet("recetario2", "SS_Recetario_lvl2.png", { frameWidth: 206, frameHeight: 102 })
-        this.load.spritesheet("recetario3", "SS_Recetario_lvl3.png", { frameWidth: 206, frameHeight: 102 })
-        this.load.spritesheet("recetario4", "SS_Recetario_lvl4.png", { frameWidth: 206, frameHeight: 102 })
-        this.load.spritesheet("recetario5", "SS_Recetario_lvl5.png", { frameWidth: 206, frameHeight: 102 })
-        this.load.spritesheet("recetario6", "SS_Recetario_lvl6.png", { frameWidth: 206, frameHeight: 102 })
-        this.load.spritesheet("recetario7", "SS_Recetario_lvl7.png", { frameWidth: 206, frameHeight: 102 })
-        this.load.spritesheet("particleHumo", "SS_Particulas_Humo.png", { frameWidth: 20, frameHeight: 20 })
-        this.load.spritesheet("particleHumo2", "SS_Particulas_Humo2.png", { frameWidth: 10, frameHeight: 10 })
-        this.load.spritesheet("particlePolvo", "SS_Particulas_Polvo.png", { frameWidth: 20, frameHeight: 20 })
-        this.load.spritesheet("particlePolvo2", "SS_Particulas_Polvo2.png", { frameWidth: 10, frameHeight: 10 })
-        this.load.spritesheet("nivelCarbon", "SS_Nivel de Carbon.png", { frameWidth: 40, frameHeight: 31 })
+        this.load.spritesheet("bossAttack01", "SS_Boss_Attack_01.png", { frameWidth: 197, frameHeight: 110 })
+        this.load.spritesheet("bossAttack02", "SS_Boss_Attack_02.png", { frameWidth: 197, frameHeight: 110 })
+        this.load.spritesheet("player01", "SS_Player01.png", { frameWidth: 30, frameHeight: 47 })
+        this.load.spritesheet("player02", "SS_Player02.png", { frameWidth: 30, frameHeight: 47 })
+        this.load.spritesheet("player1Attack", "SS_Player01_Hit.png", { frameWidth: 41, frameHeight: 47 })
+        this.load.spritesheet("player2Attack", "SS_Player02_Hit.png", { frameWidth: 41, frameHeight: 47 })
+        this.load.spritesheet("playerAttackEffect", "SS_AttackEffect.png", { frameWidth: 40, frameHeight: 30 })
+        this.load.spritesheet("ingredientsAtlas", "SS_Ingredients.png", { frameWidth: 20, frameHeight: 20 })
+        this.load.spritesheet("grill", "SS_Grill.png", { frameWidth: 25, frameHeight: 25 })
+        this.load.spritesheet("embers", "SS_Grill_Embers.png", { frameWidth: 32, frameHeight: 32 })
+        this.load.spritesheet("table", "SS_Table.png", { frameWidth: 25, frameHeight: 25 })
+        this.load.spritesheet("recipeBook01", "SS_RecipeBook_lvl1.png", { frameWidth: 206, frameHeight: 102 })
+        this.load.spritesheet("recipeBook02", "SS_RecipeBook_lvl2.png", { frameWidth: 206, frameHeight: 102 })
+        this.load.spritesheet("recipeBook03", "SS_RecipeBook_lvl3.png", { frameWidth: 206, frameHeight: 102 })
+        this.load.spritesheet("recipeBook04", "SS_RecipeBook_lvl4.png", { frameWidth: 206, frameHeight: 102 })
+        this.load.spritesheet("recipeBook05", "SS_RecipeBook_lvl5.png", { frameWidth: 206, frameHeight: 102 })
+        this.load.spritesheet("recipeBook06", "SS_RecipeBook_lvl6.png", { frameWidth: 206, frameHeight: 102 })
+        this.load.spritesheet("recipeBook07", "SS_RecipeBook_lvl7.png", { frameWidth: 206, frameHeight: 102 })
+        this.load.spritesheet("particleSmoke01", "SS_Particles_Smoke_01.png", { frameWidth: 20, frameHeight: 20 })
+        this.load.spritesheet("particleSmoke02", "SS_Particles_Smoke_02.png", { frameWidth: 10, frameHeight: 10 })
+        this.load.spritesheet("particleDust01", "SS_Particles_Dust_01.png", { frameWidth: 20, frameHeight: 20 })
+        this.load.spritesheet("particleDust02", "SS_Particles_Dust_02.png", { frameWidth: 10, frameHeight: 10 })
+        this.load.spritesheet("coalLevel", "SS_Coal_Level.png", { frameWidth: 40, frameHeight: 31 })
 
         this.load.on("complete", () => {
             //CREAR SONIDOS ---------------------------------------------------
-            this.musicaCumbia1 = this.sound.add("musicaCuarteto", { loop: true, volume: .5 })
-            this.ambienteCocina = this.sound.add("ambienteCocina", { loop: true, volume: 1 })
-            this.coccionAudio = this.sound.add("coccion", { loop: true })
-            this.picarAudio = this.sound.add("picar", { loop: true })
-            this.picarListoAudio = this.sound.add("picarListo", { loop: false })
-            this.fritarAudio = this.sound.add("fritar", { loop: true })
-            this.coccionListoAudio = this.sound.add("coccionListo", { loop: false })
+            this.musicKitchenAudio = this.sound.add("musicKitchen", { loop: false, volume: .5 })
+            this.musicTutorialAudio = this.sound.add("musicTutorial", { loop: true, volume: .5 })
+            this.kitchenAmbientAudio = this.sound.add("kitchenAmbientAudio", { loop: true, volume: 1 })
+            this.cookAudio = this.sound.add("cook", { loop: true })
+            this.chopAudio = this.sound.add("chop", { loop: true })
+            this.fryAudio = this.sound.add("fry", { loop: true })
+            this.cookReadyAudio = this.sound.add("cookReady", { loop: false })
             this.dashAudio = this.sound.add("dash", { loop: false })
-            this.caminarAudio = this.sound.add("caminar_pasto", { loop: false })
-            this.agarrarAudio = this.sound.add("agarrar", { loop: false })
-            this.lanzarAudio = this.sound.add("lanzar", { loop: false })
-            this.cajaAudio = this.sound.add("caja", { loop: false })
-            this.pedidoNuevoAudio = this.sound.add("pedidoNuevo", { loop: false })
-            this.pedidoEntregadoAudio = this.sound.add("pedidoEntregado", { loop: false })
-            this.dineroAudio = this.sound.add("dinero", { loop: false })
-            this.tiempoEmpiezaAudio = this.sound.add("tiempoEmpieza", { loop: false })
-            this.tiempoCriticoAudio = this.sound.add("tiempoCritico", { loop: false })
-            this.tiempoFinAudio = this.sound.add("tiempoFin", { loop: false })
-            this.golpePjAudio = this.sound.add("golpePj", { loop: false })
-            this.muerteBossAudio = this.sound.add("muerteBoss", { loop: false })
-            this.golpeBossAudio = this.sound.add("golpeBoss", { loop: false })
-            this.ambienteBossAudio = this.sound.add("ambienteBoss", { loop: false })
+            this.playerWalkAudio = this.sound.add("playerWalk", { loop: false })
+            this.grabAudio = this.sound.add("grab", { loop: false })
+            this.throwAudio = this.sound.add("throw", { loop: false })
+            this.boxAudio = this.sound.add("box", { loop: false })
+            this.newOrderAudio = this.sound.add("newOrder", { loop: false })
+            this.deliveredOrderAudio = this.sound.add("deliveredOrder", { loop: false })
+            this.moneyAudio = this.sound.add("money", { loop: false })
+            this.timeBeginAudio = this.sound.add("timeBegin", { loop: false })
+            this.timeCriticalAudio = this.sound.add("timeCritical", { loop: false })
+            this.timeEndAudio = this.sound.add("timeEnd", { loop: false })
+            this.playerHitAudio = this.sound.add("playerHit", { loop: false })
+            this.bossDeathAudio = this.sound.add("bossDeath", { loop: false })
+            this.bossHitAudio = this.sound.add("bossHit", { loop: false })
+            this.bossHowlAudio = this.sound.add("bossHowl", { loop: false })
             this.assetsReady = true;
         });
     }

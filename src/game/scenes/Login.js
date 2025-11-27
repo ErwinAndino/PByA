@@ -4,13 +4,21 @@ import { auth } from "../../utils/firebase/config";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { GithubAuthProvider } from "firebase/auth";
+import { getPhrase } from "../../utils/Translations";
+import keys from "../../utils/enums/keys";
 
 export class LoginScene extends Phaser.Scene {
     constructor() {
         super("Login");
+        const { noUser, yesUser, register, continueWith, errorWith, missingData, login, password } = keys.sceneFirebase;
+        this.continueWith = continueWith;
+        this.errorWith = errorWith;
+        this.missingData = missingData;
+        this.login = login;
+        this.password = password;
     }
 
-    preload() {}
+    preload() { }
 
     create() {
         const { width, height } = this.scale;
@@ -22,7 +30,7 @@ export class LoginScene extends Phaser.Scene {
 
         this.enableKeyboardControls();
 
-        this.add.text(width / 2, 50, "Iniciar Sesión", {
+        this.add.text(width / 2, 50, getPhrase(this.login), {
             fontFamily: "Arial",
             fontSize: "32px",
             color: "#ffffff"
@@ -36,28 +44,28 @@ export class LoginScene extends Phaser.Scene {
         }).setOrigin(0.5);
 
         // Botón Google
-        this.googleBtn = this.add.text(width / 4, 250, "Continuar con Google", {
+        this.googleBtn = this.add.text(width / 4, 250, getPhrase(this.continueWith) + " Google", {
             fontFamily: "Arial",
             fontSize: "24px",
             color: "#ffffff",
             backgroundColor: "#4285F4",
             padding: { x: 10, y: 10 }
         })
-        .setOrigin(0.5)
-        .setInteractive({ useHandCursor: true })
-        .on("pointerdown", () => this.loginWithGoogle());
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true })
+            .on("pointerdown", () => this.loginWithGoogle());
 
         // Botón GitHub
-        this.githubBtn = this.add.text(width*(3/4), 250, "Continuar con GitHub", {
+        this.githubBtn = this.add.text(width * (3 / 4), 250, getPhrase(this.continueWith) + " Github", {
             fontFamily: "Arial",
             fontSize: "24px",
             color: "#ffffff",
             backgroundColor: "#24292e", // color GitHub
             padding: { x: 10, y: 10 }
         })
-        .setOrigin(0.5)
-        .setInteractive({ useHandCursor: true })
-        .on("pointerdown", () => this.loginWithGitHub());
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true })
+            .on("pointerdown", () => this.loginWithGitHub());
     }
 
     async loginWithGitHub() {
@@ -74,7 +82,7 @@ export class LoginScene extends Phaser.Scene {
 
         } catch (error) {
             console.error("GitHub login error:", error.message);
-            this.errorText.setText("Error GitHub: " + error.message);
+            this.errorText.setText(getPhrase(this.errorWith) + ": Github " + error.message);
         }
     }
 
@@ -93,7 +101,7 @@ export class LoginScene extends Phaser.Scene {
 
         } catch (error) {
             console.error("Google login error:", error.message);
-            this.errorText.setText("Error Google: " + error.message);
+            this.errorText.setText(getPhrase(this.errorWith) + ": Google " + error.message);
         }
     }
 
@@ -101,7 +109,7 @@ export class LoginScene extends Phaser.Scene {
         this.formWrapper = document.createElement("div");
         Object.assign(this.formWrapper.style, {
             position: "absolute",
-            top: "200px",
+            top: "300px",
             left: "50%",
             transform: "translateX(-50%)",
             display: "flex",
@@ -123,7 +131,7 @@ export class LoginScene extends Phaser.Scene {
         // password
         this.passInput = document.createElement("input");
         this.passInput.type = "password";
-        this.passInput.placeholder = "Contraseña";
+        this.passInput.placeholder = getPhrase(this.password);
         Object.assign(this.passInput.style, {
             width: "260px",
             padding: "10px",
@@ -195,7 +203,7 @@ export class LoginScene extends Phaser.Scene {
         this.errorText.setText("");
 
         if (!email || !password) {
-            this.errorText.setText("Faltan Datos");
+            this.errorText.setText(getPhrase(this.missingData));
             return;
         }
 

@@ -57,7 +57,7 @@ export class Interactuables extends Phaser.Physics.Arcade.Sprite {
             if (!this.highlighted) {
                 this.fx.brightness(1.1);
                 this.highlighted = true;
-                if (this.texture.key === "asador") {
+                if (this.texture.key === "grill") {
                     this.fx2.saturate(1.5);
                 }
             }

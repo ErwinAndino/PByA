@@ -1,5 +1,6 @@
 import keys from "../../utils/enums/keys";
 import { getTranslations, getPhrase } from "../../utils/Translations";
+import { finishLevel } from "../../utils/gameFunctions.js";
 export class HUD extends Phaser.Scene {
     constructor() {
         super("HUD");
@@ -45,7 +46,7 @@ export class HUD extends Phaser.Scene {
                 stroke: "#E3C0A1"
             }).setOrigin(.5);
         }
-        this.timeTotal = 240000;
+        this.timeTotal = 185000;
         this.timeLeft = this.timeTotal;
         this.critico = true;
 
@@ -82,7 +83,7 @@ export class HUD extends Phaser.Scene {
         }
         this.audio = this.scene.get("Preloader")
 
-        this.audio.tiempoEmpiezaAudio.play({
+        this.audio.timeBeginAudio.play({
             volume: 0.5, // Ajusta el volumen
             rate: 1    // Ajusta el pitch
         });
@@ -99,14 +100,14 @@ export class HUD extends Phaser.Scene {
 
         if (this.timeLeft < this.timeTotal * 0.2 && this.critico) {
             this.critico = false;
-            this.audio.tiempoCriticoAudio.play({
+            this.audio.timeCriticalAudio.play({
                 volume: 0.5, // Ajusta el volumen
                 rate: 1    // Ajusta el pitch
             });
             this.timerText.setColor("#d42929ff")
         }
         if (this.timeLeft === 1000) {
-            this.audio.tiempoFinAudio.play({
+            this.audio.timeEndAudio.play({
                 volume: 0.5, // Ajusta el volumen
                 rate: 1    // Ajusta el pitch
             });
@@ -116,7 +117,7 @@ export class HUD extends Phaser.Scene {
             this.timerEvent.remove(false)
 
             if (this.gameScene) {
-                this.gameScene.finishLevel()
+                finishLevel(this.gameScene)
             }
         }
 

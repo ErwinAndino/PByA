@@ -1,16 +1,24 @@
 // RegisterScene.js
 import Phaser from "phaser";
-import { auth } from "../../utils/firebase/config"; 
+import { auth } from "../../utils/firebase/config";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { GithubAuthProvider } from "firebase/auth";
+import { getPhrase } from "../../utils/Translations";
+import keys from "../../utils/enums/keys";
 
 export class RegisterScene extends Phaser.Scene {
     constructor() {
         super("Register");
+        const { noUser, yesUser, register, continueWith, errorWith, missingData, login, password } = keys.sceneFirebase;
+        this.register = register;
+        this.continueWith = continueWith;
+        this.errorWith = errorWith;
+        this.missingData = missingData;
+        this.password = password;
     }
 
-    preload() {}
+    preload() { }
 
     create() {
         const { width, height } = this.scale;
@@ -27,38 +35,38 @@ export class RegisterScene extends Phaser.Scene {
         this.enableKeyboardControls();
 
         // Texto visual opcional (Phaser)
-        this.add.text(100, 50, "Registro", {
+        this.add.text(width / 2, 50, getPhrase(this.register), {
             fontFamily: "Arial",
             fontSize: "32px",
             color: "#ffffff"
-        });
+        }).setOrigin(0.5);
 
-        this.errorText = this.add.text(width/2, 300, "", {
+        this.errorText = this.add.text(width / 2, 300, "", {
             fontFamily: "Arial",
             fontSize: "20px",
             color: "#ff6961" // Rojo suave
         }).setOrigin(.5);
 
-        this.googleBtn = this.add.text(width/4, 250, "Continuar con Google", {
+        this.googleBtn = this.add.text(width / 4, 250, getPhrase(this.continueWith) + " Google", {
             fontFamily: "Arial",
             fontSize: "24px",
             color: "#ffffff",
             backgroundColor: "#4285F4",
             padding: { x: 10, y: 10 }
         }).setOrigin(.5)
-        .setInteractive({ useHandCursor: true })
-        .on("pointerdown", () => this.loginWithGoogle());
+            .setInteractive({ useHandCursor: true })
+            .on("pointerdown", () => this.loginWithGoogle());
 
-        this.githubBtn = this.add.text(width*(3/4), 250, "Continuar con GitHub", {
+        this.githubBtn = this.add.text(width * (3 / 4), 250, getPhrase(this.continueWith) + " Github", {
             fontFamily: "Arial",
             fontSize: "24px",
             color: "#ffffff",
             backgroundColor: "#24292E", // color GitHub
             padding: { x: 10, y: 10 }
         })
-        .setOrigin(.5)
-        .setInteractive({ useHandCursor: true })
-        .on("pointerdown", () => this.loginWithGithub());
+            .setOrigin(.5)
+            .setInteractive({ useHandCursor: true })
+            .on("pointerdown", () => this.loginWithGithub());
     }
 
     async loginWithGoogle() {
@@ -76,7 +84,7 @@ export class RegisterScene extends Phaser.Scene {
         } catch (error) {
             console.error("Error Google:", error.message);
             if (this.errorText) {
-                this.errorText.setText("Error con Google: " + error.message);
+                this.errorText.setText(getPhrase(this.errorWith) + ": Google " + error.message);
             }
         }
     }
@@ -96,7 +104,7 @@ export class RegisterScene extends Phaser.Scene {
         } catch (error) {
             console.error("Error GitHub:", error.message);
             if (this.errorText) {
-                this.errorText.setText("Error con GitHub: " + error.message);
+                this.errorText.setText(getPhrase(this.errorWith) + ": Github " + error.message);
             }
         }
     }
@@ -106,7 +114,7 @@ export class RegisterScene extends Phaser.Scene {
         // CONTENEDOR
         this.formWrapper = document.createElement("div");
         this.formWrapper.style.position = "absolute";
-        this.formWrapper.style.top = "200px";
+        this.formWrapper.style.top = "300px";
         this.formWrapper.style.left = "50%";
         this.formWrapper.style.transform = "translateX(-50%)";
         this.formWrapper.style.display = "flex";
@@ -127,7 +135,7 @@ export class RegisterScene extends Phaser.Scene {
         // PASSWORD
         this.passInput = document.createElement("input");
         this.passInput.type = "password";
-        this.passInput.placeholder = "Contraseña";
+        this.passInput.placeholder = getPhrase(this.password);
         Object.assign(this.passInput.style, {
             width: "260px",
             padding: "10px",
@@ -155,7 +163,6 @@ export class RegisterScene extends Phaser.Scene {
             }
             if (e.key === "Enter") {
                 e.preventDefault();
-                console.log("Enter")
                 this.submitForm();
             }
         });
@@ -167,7 +174,6 @@ export class RegisterScene extends Phaser.Scene {
             }
             if (e.key === "Enter") {
                 e.preventDefault();
-                console.log("Enter")
                 this.submitForm();
             }
         });
@@ -207,10 +213,10 @@ export class RegisterScene extends Phaser.Scene {
         const email = this.emailInput.value.trim();
         const password = this.passInput.value.trim();
         this.errorText.setText("");
-        
+
         if (!email || !password) {
             console.log("Faltan datos");
-            this.errorText.setText("Faltan Datos");
+            this.errorText.setText(getPhrase(this.missingData));
             return;
         }
 

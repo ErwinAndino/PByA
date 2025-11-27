@@ -53,7 +53,7 @@ export class CircularTimer {
         this.circle.lineStyle(4, 0xffffff);
         this.circle.strokeCircle(this.x, this.y, this.radius);
 
-        if (this.active && this.kind === 1) { //kind de orden
+        if (this.active && this.kind === 1) { //kind de order
             let angle = (this.progress / this.duration) * Phaser.Math.PI2;
             if ((this.progress * 100) / this.duration < 50) {
                 this.circle.lineStyle(4, 0x00ff00); // "#00ff00"
@@ -65,7 +65,7 @@ export class CircularTimer {
             this.circle.beginPath();
             this.circle.arc(this.x, this.y, this.radius, -Math.PI / 2, -Math.PI / 2 + angle, false);
             this.circle.strokePath();
-        } else if (this.active && this.kind === 2) { //kind de asador y parrilla
+        } else if (this.active && this.kind === 2) { //kind de grill y parrilla
             let angle = (this.progress / this.duration) * Phaser.Math.PI2;
             if (this.progress >= (this.duration - 1500)) {
                 this.circle.lineStyle(4, 0xff0000); // "#ff0000"
@@ -78,7 +78,7 @@ export class CircularTimer {
             this.circle.arc(this.x, this.y, this.radius, -Math.PI / 2, -Math.PI / 2 + angle, false);
             this.circle.strokePath();
 
-        } else if (this.active && this.kind === 3) { //kind de mesa
+        } else if (this.active && this.kind === 3) { //kind de table
             let angle = (this.progress / this.duration) * Phaser.Math.PI2;
             if ((this.progress * 100) / this.duration < 50) {
                 this.circle.lineStyle(4, 0xff0000); // "#ff0000"

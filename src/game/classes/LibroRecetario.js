@@ -2,12 +2,12 @@ import { Interactuables } from "./Interactuables";
 
 export class LibroRecetario extends Interactuables {
     constructor(scene, x, y) {
-        super(scene, x, y, "libroReceta");
+        super(scene, x, y, "recipeBook");
 
         this.scene = scene;
         this.recetario = scene.recetario;
 
-        this.indicador = this.scene.add.image(x, y - 40, "icono")
+        this.indicador = this.scene.add.image(x, y - 40, "exclamationIcon")
         this.indicador.setDepth(100)
     }
 

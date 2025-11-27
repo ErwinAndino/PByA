@@ -1,9 +1,10 @@
 import { Interactuables } from "./Interactuables.js";
 import { CircularTimer } from "./CircularTimer.js";
 import { Ingredientes } from "./Ingredientes.js";
+import { checkTaskQueue } from "../../utils/gameFunctions.js";
 
 export class Task extends Interactuables {
-    constructor(scene, x, y, availableIngredients = [], size = 48, textureKey = "orden", ingredients = [null], duration = 40000) {
+    constructor(scene, x, y, availableIngredients = [], size = 48, textureKey = "order", ingredients = [null], duration = 40000) {
 
         super(scene, x, y, textureKey, size);
 
@@ -12,7 +13,6 @@ export class Task extends Interactuables {
         this.textureKey = textureKey;
         this.availableIngredients = availableIngredients;
         this.ingredientList = [];
-        console.log(ingredients)
         if (ingredients[0] === null) {
             this.ingredientAmount = Math.floor(Math.random() * 3) + 1
         } else {
@@ -21,7 +21,7 @@ export class Task extends Interactuables {
         this.ordersLeft = this.ingredientAmount;
         this.itemsHolded = []
 
-        this.zoneLayout = this.scene.add.image(x + 84, y, "zonaEntrega")
+        this.zoneLayout = this.scene.add.image(x + 84, y, "deliverZone")
         this.zoneLayout.setDepth(7)
         this.zoneLayout.setBlendMode(Phaser.BlendModes.LIGHTEN)
         this.taskDuration = 0
@@ -37,10 +37,10 @@ export class Task extends Interactuables {
             this.nextIngredient.setGrabbed(true)
             this.itemsHolded.push(this.nextIngredient);
             this.nextIngredient.setVisible(true)
-            if (this.nextIngredient.textureKey === "sanMilaCarne_0" ||
+            if (this.nextIngredient.textureKey === "beefMilaSandwich_0" ||
                 this.nextIngredient.textureKey === "sanMila" ||
                 this.nextIngredient.textureKey === "pancho" ||
-                this.nextIngredient.textureKey === "sanBife_0"
+                this.nextIngredient.textureKey === "beefSandwich_0"
             ) {
 
                 this.taskDuration += duration * 2;
@@ -75,8 +75,6 @@ export class Task extends Interactuables {
 
     onInteract(player) {
         if (player.holdingItem) {
-            console.log(player.itemHolded.textureKey)
-            console.log(`%cItem del player: ${player.itemHolded.textureKey} e items del pedido: ${this.itemsHolded.join(", ")}`, "color: aqua")
 
             const atStart = this.ordersLeft;
             this.itemsHolded.forEach(order => {
@@ -91,7 +89,7 @@ export class Task extends Interactuables {
                         const itemRef = player.itemHolded;
                         player.holdingSM.changeState("none", { player: player })
                         itemRef.destroy()
-                        this.audio.pedidoEntregadoAudio.play({
+                        this.audio.deliveredOrderAudio.play({
                             volume: 0.5, // Ajusta el volumen
                             rate: 1    // Ajusta el pitch
                         });
@@ -138,7 +136,7 @@ export class Task extends Interactuables {
             this.scene.registry.set(`vsPoints${playerId}`, this.scene.registry.get(`vsPoints${playerId}`) + 20 * this.ingredientAmount);
             this.scene.scene.get("HUD").updatePoints()
         }
-        this.audio.dineroAudio.play({
+        this.audio.moneyAudio.play({
             volume: 0.5, // Ajusta el volumen
             rate: Phaser.Math.FloatBetween(.8, 1.4)   // Ajusta el pitch
         });
@@ -150,7 +148,7 @@ export class Task extends Interactuables {
         this.scene.Interactuables = this.scene.Interactuables.filter(i => i !== this);
         this.setVisible(false);
         this.setPosition(300, 300);
-        this.scene.checkTaskQueue();
+        checkTaskQueue(this.scene);
         this.circleTimer.circle.setVisible(false);
 
         this.itemsHolded.forEach(element => {
