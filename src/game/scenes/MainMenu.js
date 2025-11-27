@@ -6,6 +6,8 @@ import keys from "../../utils/enums/keys";
 import LanguageSelector from "../classes/LanguageSelector.js";
 import { auth } from "../../utils/firebase/config.js";
 import { signOut } from "firebase/auth";
+import createInputs from "../../utils/createInputSystem.js";
+import { highlightText, logout } from "../../utils/mainMenuFunctions.js";
 
 export class MainMenu extends Phaser.Scene {
 
@@ -14,6 +16,9 @@ export class MainMenu extends Phaser.Scene {
         super("MainMenu");
         const { coop, versus, scoreboard, idioma, } = keys.sceneInitialMenu;
         const { grab, dash, lanzar, select, hit } = keys.controlsPaper
+        const { noUser, yesUser, register, continueGoogle, continueGithub, errorGoogle, errorGithub, missingData, login, password } = keys.sceneFirebase;
+        this.noUser = noUser;
+        this.yesUser = yesUser;
         this.coop = coop;
         this.versus = versus;
         this.scoreboard = scoreboard;
@@ -32,44 +37,26 @@ export class MainMenu extends Phaser.Scene {
 
         this.isInputLocked = false;
 
-        this.inputSystem = new InputSystem(this.input);
-        this.inputSystem.configureKeyboard({
-            [INPUT_ACTIONS.UP]: [Phaser.Input.Keyboard.KeyCodes.W],
-            [INPUT_ACTIONS.DOWN]: [Phaser.Input.Keyboard.KeyCodes.S],
-            [INPUT_ACTIONS.LEFT]: [Phaser.Input.Keyboard.KeyCodes.A],
-            [INPUT_ACTIONS.RIGHT]: [Phaser.Input.Keyboard.KeyCodes.D],
-            [INPUT_ACTIONS.SOUTH]: [Phaser.Input.Keyboard.KeyCodes.X],
-            [INPUT_ACTIONS.EAST]: [Phaser.Input.Keyboard.KeyCodes.C],
-            [INPUT_ACTIONS.WEST]: [Phaser.Input.Keyboard.KeyCodes.Z]
-        }, "player1");
-        this.inputSystem.configureKeyboard({
-            [INPUT_ACTIONS.UP]: [Phaser.Input.Keyboard.KeyCodes.UP],
-            [INPUT_ACTIONS.DOWN]: [Phaser.Input.Keyboard.KeyCodes.DOWN],
-            [INPUT_ACTIONS.LEFT]: [Phaser.Input.Keyboard.KeyCodes.LEFT],
-            [INPUT_ACTIONS.RIGHT]: [Phaser.Input.Keyboard.KeyCodes.RIGHT],
-            [INPUT_ACTIONS.SOUTH]: [Phaser.Input.Keyboard.KeyCodes.K],
-            [INPUT_ACTIONS.EAST]: [Phaser.Input.Keyboard.KeyCodes.L],
-            [INPUT_ACTIONS.WEST]: [Phaser.Input.Keyboard.KeyCodes.J]
-        }, "player2");
+        createInputs(this)
 
         const { width, height } = this.scale;
 
         this.registry.set("actualLevel", 0);
 
-        this.add.image(320, 180, "menuBG")
+        this.add.image(320, 180, "Main_Menu")
 
         const user = auth.currentUser;
 
         if (user) {
             const email = user.email;
 
-            this.add.text(width / 2, 15, `Logeado como: ${email}`, {
+            this.yesUserText = this.add.text(width / 2, 15, getPhrase(this.yesUser) + " " + email, {
                 fontFamily: "Arial",
                 fontSize: "22px",
                 color: "#ffffff"
             }).setOrigin(0.5);
         } else {
-            this.add.text(width / 2, 15, "No hay usuario logeado", {
+            this.noUserText = this.add.text(width / 2, 15, getPhrase(this.noUser), {
                 fontFamily: "Arial",
                 fontSize: "22px",
                 color: "#ff0d00ff"
@@ -138,7 +125,7 @@ export class MainMenu extends Phaser.Scene {
         ).setOrigin(0);
         this.languageText.angle = -5;
 
-        // hoja de controles
+        // paper de controles
 
         this.westText = this.add.text(width / 1.22, height / 1.62, getPhrase(this.select), {
             fontSize: "24px",
@@ -154,10 +141,9 @@ export class MainMenu extends Phaser.Scene {
         this.languageActive = false
 
 
-        console.log(this.language)
         const langs = [
-            { key: "banderaES", code: ES },
-            { key: "banderaEN", code: EN },
+            { key: "flagES", code: ES },
+            { key: "flagEN", code: EN },
         ];
         this.languageSelector = new LanguageSelector(this, 215, 260, langs, this.language, (langCode) => {
             console.log("Intentando cambiar idioma a: ", langCode);
@@ -172,7 +158,7 @@ export class MainMenu extends Phaser.Scene {
 
         // posicion del highlight inicial
         this.selector = 3
-        this.highlightText()
+        highlightText(this)
         this.RegisterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B);
         this.LoginKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.N);
         this.LogoutKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
@@ -186,7 +172,10 @@ export class MainMenu extends Phaser.Scene {
             this.versusText.setText("◦ " + getPhrase(this.versus));
             this.scoreboardText.setText("◦ " + getPhrase(this.scoreboard));
             this.languageText.setText("◦ " + getPhrase(this.idioma));
-            this.westText.setText(getPhrase(this.select))
+            this.westText.setText(getPhrase(this.select));
+            if (this.yesUserText) this.yesUserText.setText(getPhrase(this.yesUser) + " " + auth.currentUser.email);
+            else this.noUserText.setText(getPhrase(this.noUser));
+
         }
 
         // Si el input está bloqueado, no procesar nada
@@ -201,20 +190,21 @@ export class MainMenu extends Phaser.Scene {
             this.scene.start("Login");
         }
         if (Phaser.Input.Keyboard.JustDown(this.LogoutKey)) {
-            this.logout()
+            logout(this)
+            this.yesUserText = false;
         }
-        
+
         if (this.selector === 0 && this.languageSelector.active) {
             // mover entre banderas con A/D o Flechas
-            if (this.inputSystem.isJustPressed(INPUT_ACTIONS.LEFT, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.LEFT, "player2")) {
+            if (this.inputSystem.isJustPressed(INPUT_ACTIONS.LEFT, "player01") || this.inputSystem.isJustPressed(INPUT_ACTIONS.LEFT, "player02")) {
                 this.languageSelector.changeLanguage(-1);
             }
-            if (this.inputSystem.isJustPressed(INPUT_ACTIONS.RIGHT, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.RIGHT, "player2")) {
+            if (this.inputSystem.isJustPressed(INPUT_ACTIONS.RIGHT, "player01") || this.inputSystem.isJustPressed(INPUT_ACTIONS.RIGHT, "player02")) {
                 this.languageSelector.changeLanguage(1);
             }
 
             // confirmar idioma con Z o J
-            if (this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player2")) {
+            if (this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player01") || this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player02")) {
                 this.languageSelector.confirmSelection();
             }
         }
@@ -222,22 +212,19 @@ export class MainMenu extends Phaser.Scene {
         // Si no esta activo el language dejar mover arriba y abajo
 
         if (!this.languageActive) {
-            if (this.inputSystem.isJustPressed(INPUT_ACTIONS.UP, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.UP, "player2")) {
-                console.log("PA RRIBA")
+            if (this.inputSystem.isJustPressed(INPUT_ACTIONS.UP, "player01") || this.inputSystem.isJustPressed(INPUT_ACTIONS.UP, "player02")) {
                 this.selector = Math.min(3, this.selector + 1)
-                this.highlightText()
+                highlightText(this)
             }
-            if (this.inputSystem.isJustPressed(INPUT_ACTIONS.DOWN, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.DOWN, "player2")) {
-                console.log("PA BAJO")
+            if (this.inputSystem.isJustPressed(INPUT_ACTIONS.DOWN, "player01") || this.inputSystem.isJustPressed(INPUT_ACTIONS.DOWN, "player02")) {
                 this.selector = Math.max(0, this.selector - 1)
-                this.highlightText()
-                
+                highlightText(this)
+
             }
         }
 
         // selección 
-        if (this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player2")) {
-            console.log("SI SI SI SI")
+        if (this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player01") || this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player02")) {
             if (this.selector === 3) { // COOP
                 this.registry.set("mode", 1);
                 if (this.registry.get("actualLevel") === 0) {
@@ -245,8 +232,8 @@ export class MainMenu extends Phaser.Scene {
                 } else {
                     this.scene.start("Load", { nextScene: "Game" });
                 }
-                
-                
+
+
             }
             if (this.selector === 2) { // VERSUS
                 this.registry.set("mode", 2);
@@ -255,44 +242,22 @@ export class MainMenu extends Phaser.Scene {
                 } else {
                     this.scene.start("Load", { nextScene: "Game" });
                 }
-                
+
             }
             if (this.selector === 1) {// SCOREBOARD
             }
             if (this.selector === 0) { // LANGUAGE
                 this.languageActive = true
                 this.languageSelector.toggleArrows()
-                
+
             }
         }
-        
+
     }
-    highlightText() {
-        this.coopText.setColor("#fff");
-        this.versusText.setColor("#fff");
-        this.languageText.setColor("#fff");
-        this.scoreboardText.setColor("#fff");
-        let text = null;
-        if (this.selector === 3) text = this.coopText;
-        if (this.selector === 2) text = this.versusText;
-        if (this.selector === 1) text = this.scoreboardText;
-        if (this.selector === 0) text = this.languageText;
-        text.setColor("#2ed12eff");
-    }
+
     updateWasChangedLanguage = () => {
         this.#wasChangedLanguage = FETCHED;
     };
-    
-    async logout() {
-        try {
-            await signOut(auth);
-            console.log("Sesión cerrada");
-
-            this.scene.start("MainMenu"); // O la escena que quieras
-        } catch (error) {
-            console.error("Error al cerrar sesión:", error.message);
-        }
-    }
 
     async getTranslations(language) {
         this.language = language;
@@ -302,8 +267,8 @@ export class MainMenu extends Phaser.Scene {
         // Bloquea el input mientras se cargan las traducciones
         this.isInputLocked = true;
         this.cameras.main.setAlpha(0.5);
-        
-        this.loaderSprite = this.add.sprite(width / 2, height / 2 + 130, "campana").setScale(2);
+
+        this.loaderSprite = this.add.sprite(width / 2, height / 2 + 130, "bell").setScale(2);
         this.tweens.add({
             targets: this.loaderSprite,
             scale: 3,

@@ -11,15 +11,22 @@ const sceneGame = {
 const scenePreloader = {
     symbol: "Este símbolo significa que está cargando!",
 }
+const sceneFirebase = {
+    noUser: "No hay usuario logeado",
+    yesUser: "Logeado como:",
+    register: "Registro",
+    continueWith: "Continuar con",
+    errorWith: "Error con",
+    missingData: "Faltan Datos",
+    login: "Iniciar Sesión",
+    password: "Contraseña",
+}
 
 const sceneInitialMenu = {
     coop: "Cooperativo",
     versus: "Versus",
     scoreboard: "Puntuaciones",
     idioma: "Idioma",
-    grab: "Juntar",
-    dash: "Correr",
-    lanzar: "Lanzar",
 };
 const controlsPaper = {
     grab: "Juntar",
@@ -121,6 +128,7 @@ const sabiasQue = {
 
 export default {
     sceneGame,
+    sceneFirebase,
     scenePreloader,
     sceneInitialMenu,
     sceneGameOver,

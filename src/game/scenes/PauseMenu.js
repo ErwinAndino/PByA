@@ -1,6 +1,7 @@
-import InputSystem, { INPUT_ACTIONS } from "../../utils/InputSystem";
+import { INPUT_ACTIONS } from "../../utils/InputSystem";
 import { getPhrase } from "../../utils/Translations";
 import keys from "../../utils/enums/keys";
+import createInputs from "../../utils/createInputSystem";
 export class PauseMenu extends Phaser.Scene {
     constructor() {
         super("PauseMenu");
@@ -17,26 +18,8 @@ export class PauseMenu extends Phaser.Scene {
     }
     create() {
         const { width, height } = this.scale;
-        this.inputSystem = new InputSystem(this.input);
-        this.inputSystem.configureKeyboard({
-            [INPUT_ACTIONS.UP]: [Phaser.Input.Keyboard.KeyCodes.W],
-            [INPUT_ACTIONS.DOWN]: [Phaser.Input.Keyboard.KeyCodes.S],
-            [INPUT_ACTIONS.LEFT]: [Phaser.Input.Keyboard.KeyCodes.A],
-            [INPUT_ACTIONS.RIGHT]: [Phaser.Input.Keyboard.KeyCodes.D],
-            [INPUT_ACTIONS.SOUTH]: [Phaser.Input.Keyboard.KeyCodes.X],
-            [INPUT_ACTIONS.EAST]: [Phaser.Input.Keyboard.KeyCodes.C],
-            [INPUT_ACTIONS.WEST]: [Phaser.Input.Keyboard.KeyCodes.Z]
-        }, "player1");
-        this.inputSystem.configureKeyboard({
-            [INPUT_ACTIONS.UP]: [Phaser.Input.Keyboard.KeyCodes.UP],
-            [INPUT_ACTIONS.DOWN]: [Phaser.Input.Keyboard.KeyCodes.DOWN],
-            [INPUT_ACTIONS.LEFT]: [Phaser.Input.Keyboard.KeyCodes.LEFT],
-            [INPUT_ACTIONS.RIGHT]: [Phaser.Input.Keyboard.KeyCodes.RIGHT],
-            [INPUT_ACTIONS.SOUTH]: [Phaser.Input.Keyboard.KeyCodes.K],
-            [INPUT_ACTIONS.EAST]: [Phaser.Input.Keyboard.KeyCodes.L],
-            [INPUT_ACTIONS.WEST]: [Phaser.Input.Keyboard.KeyCodes.J]
-        }, "player2");
 
+        createInputs(this);
         this.pauseGame();
         this.scene.bringToTop("PauseMenu");
 
@@ -91,8 +74,7 @@ export class PauseMenu extends Phaser.Scene {
         this.highlightText();
     }
     update() {
-        if (this.inputSystem.isJustPressed(INPUT_ACTIONS.UP, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.UP, "player2")) {
-            console.log("PA RRIBA")
+        if (this.inputSystem.isJustPressed(INPUT_ACTIONS.UP, "player01") || this.inputSystem.isJustPressed(INPUT_ACTIONS.UP, "player02")) {
             if (this.sceneKey === "Tutorial") {
                 this.selector = Math.min(2, this.selector + 1)
             } else {
@@ -101,13 +83,12 @@ export class PauseMenu extends Phaser.Scene {
 
             this.highlightText()
         }
-        if (this.inputSystem.isJustPressed(INPUT_ACTIONS.DOWN, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.DOWN, "player2")) {
-            console.log("PA BAJO")
+        if (this.inputSystem.isJustPressed(INPUT_ACTIONS.DOWN, "player01") || this.inputSystem.isJustPressed(INPUT_ACTIONS.DOWN, "player02")) {
             this.selector = Math.max(0, this.selector - 1)
             this.highlightText()
 
         }
-        if (this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player1") || this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player2")) {
+        if (this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player01") || this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player02")) {
             if (this.sceneKey === "Tutorial") {
                 if (this.selector === 2) {// RESUME
                     this.resumeGame();
@@ -171,7 +152,6 @@ export class PauseMenu extends Phaser.Scene {
         this.cameras.main.fadeOut(500, 0, 0, 0);
 
         this.registry.set("actualLevel", 1)
-        console.log(this.registry.get("actualLevel"))
         this.cameras.main.once("camerafadeoutcomplete", () => {
             this.scene.stop(this.sceneKey); // detiene la escena de juego
             this.scene.start("Load", { nextScene: "Game" });

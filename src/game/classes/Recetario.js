@@ -1,14 +1,14 @@
 export class Recetario extends Phaser.GameObjects.Sprite {
     constructor(scene, x, y, lvl, frame = 0) {
         let texture = "";
-        if (lvl === 0) texture = "recetario4";
-        else if (lvl === 1) texture = "recetario1";
-        else if (lvl === 2) texture = "recetario2";
-        else if (lvl === 3) texture = "recetario3";
-        else if (lvl === 4) texture = "recetario4";
-        else if (lvl === 5) texture = "recetario5";
-        else if (lvl === 6) texture = "recetario6";
-        else if (lvl >= 7) texture = "recetario7";
+        if (lvl === 0) texture = "recipeBook04";
+        else if (lvl === 1) texture = "recipeBook01";
+        else if (lvl === 2) texture = "recipeBook02";
+        else if (lvl === 3) texture = "recipeBook03";
+        else if (lvl === 4) texture = "recipeBook04";
+        else if (lvl === 5) texture = "recipeBook05";
+        else if (lvl === 6) texture = "recipeBook06";
+        else if (lvl >= 7) texture = "recipeBook07";
 
         super(scene, x, y, texture, frame);
 

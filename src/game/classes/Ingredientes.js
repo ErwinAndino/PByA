@@ -1,14 +1,13 @@
 import { Interactuables } from "./Interactuables";
 
 export class Ingredientes extends Interactuables {
-    constructor(scene, x, y, textureKey = "carbon_0") {
-        super(scene, x, y, "ingredientesAtlas", 900, scene.ingredientesAtlas[textureKey].index);
-        console.log("esto llega a ingredientes: ", textureKey)
+    constructor(scene, x, y, textureKey = "coal_0") {
+        super(scene, x, y, "ingredientsAtlas", 900, scene.ingredientsAtlas[textureKey].index);
 
         this.setVisible(false)
         this.scene = scene;
         this.textureKey = textureKey;
-        this.dataIngredient = this.scene.ingredientesAtlas[textureKey]
+        this.dataIngredient = this.scene.ingredientsAtlas[textureKey]
         this.grabbed = false;
 
         this.body.setMass(3);
@@ -24,7 +23,7 @@ export class Ingredientes extends Interactuables {
         this.scene.physics.add.collider(this.scene.player, this, () => {
             this.scene.player.setVelocity(this.scene.player.body.velocity.x * .8, this.scene.player.body.velocity.y * .8)
         })
-        this.scene.physics.add.collider(this.scene.player2, this, () => {
+        this.scene.physics.add.collider(this.scene.player02, this, () => {
             this.scene.player.setVelocity(this.scene.player.body.velocity.x * .8, this.scene.player.body.velocity.y * .8)
         })
         this.scene.physics.add.collider(this.scene.barra, this)
@@ -54,10 +53,10 @@ export class Ingredientes extends Interactuables {
     update(dt) {
     }
 
-    setGrabbed(value){
+    setGrabbed(value) {
         this.grabbed = value;
 
-        if(this.body){
+        if (this.body) {
             this.body.enable = !value;
         }
     }
@@ -70,7 +69,7 @@ export class Ingredientes extends Interactuables {
 
     cook(cocina) {
         this.textureKey = this.dataIngredient.next[cocina];
-        this.dataIngredient = this.scene.ingredientesAtlas[this.textureKey];
-        this.setTexture("ingredientesAtlas", this.dataIngredient.index);
+        this.dataIngredient = this.scene.ingredientsAtlas[this.textureKey];
+        this.setTexture("ingredientsAtlas", this.dataIngredient.index);
     }
 }

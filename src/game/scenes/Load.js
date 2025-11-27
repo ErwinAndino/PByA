@@ -71,7 +71,7 @@ export class Load extends Phaser.Scene {
             [INPUT_ACTIONS.SOUTH]: [Phaser.Input.Keyboard.KeyCodes.X],
             [INPUT_ACTIONS.EAST]: [Phaser.Input.Keyboard.KeyCodes.C],
             [INPUT_ACTIONS.WEST]: [Phaser.Input.Keyboard.KeyCodes.Z]
-        }, "player1");
+        }, "player01");
         this.inputSystem.configureKeyboard({
             [INPUT_ACTIONS.UP]: [Phaser.Input.Keyboard.KeyCodes.UP],
             [INPUT_ACTIONS.DOWN]: [Phaser.Input.Keyboard.KeyCodes.DOWN],
@@ -80,7 +80,7 @@ export class Load extends Phaser.Scene {
             [INPUT_ACTIONS.SOUTH]: [Phaser.Input.Keyboard.KeyCodes.K],
             [INPUT_ACTIONS.EAST]: [Phaser.Input.Keyboard.KeyCodes.L],
             [INPUT_ACTIONS.WEST]: [Phaser.Input.Keyboard.KeyCodes.J]
-        }, "player2");
+        }, "player02");
 
         const width = this.cameras.main.width;
         const height = this.cameras.main.height;
@@ -94,11 +94,9 @@ export class Load extends Phaser.Scene {
         let randomIndex = Math.floor(Math.random() * this.arrayWierdPhrases.length)
 
         const randomPhrase = this.arrayWierdPhrases[randomIndex];
-        console.log(randomIndex)
-        console.log(randomPhrase)
 
 
-        this.add.image(width, height, "hoja").setOrigin(1, 1)
+        this.add.image(width, height, "paper").setOrigin(1, 1)
 
         const randomPhraseText = this.add.text(width / 2, height / 2 - 120, getPhrase(randomPhrase), {
             fontFamily: "MyFont",
@@ -106,7 +104,7 @@ export class Load extends Phaser.Scene {
             color: "#ffffff"
         }).setOrigin(0.5);
 
-        const loaderSprite = this.add.sprite(width / 2, (height / 2) + 130, "campana").setScale(2);
+        const loaderSprite = this.add.sprite(width / 2, (height / 2) + 130, "bell").setScale(2);
         this.tweens.add({
             targets: loaderSprite,
             scale: 3,
@@ -136,7 +134,7 @@ export class Load extends Phaser.Scene {
         this.loadingText = loadingText;
         this.loaderSprite = loaderSprite;
 
-        //hoja de botones
+        //paper de botones
         let wText;
         let sText;
         let eText;
@@ -149,7 +147,7 @@ export class Load extends Phaser.Scene {
         } else {
             wText = this.grab;
             sText = this.dash;
-            eText = this.lanzar;
+            eText = this.throw;
         }
 
         this.westText = this.add.text(width / 1.2, height / 1.63, getPhrase(wText), {
@@ -200,12 +198,12 @@ export class Load extends Phaser.Scene {
 
         if (this.ready) {
             if (
-                this.inputSystem.isJustPressed(INPUT_ACTIONS.SOUTH, "player1") ||
-                this.inputSystem.isJustPressed(INPUT_ACTIONS.EAST, "player1") ||
-                this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player1") ||
-                this.inputSystem.isJustPressed(INPUT_ACTIONS.SOUTH, "player2") ||
-                this.inputSystem.isJustPressed(INPUT_ACTIONS.EAST, "player2") ||
-                this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player2")
+                this.inputSystem.isJustPressed(INPUT_ACTIONS.SOUTH, "player01") ||
+                this.inputSystem.isJustPressed(INPUT_ACTIONS.EAST, "player01") ||
+                this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player01") ||
+                this.inputSystem.isJustPressed(INPUT_ACTIONS.SOUTH, "player02") ||
+                this.inputSystem.isJustPressed(INPUT_ACTIONS.EAST, "player02") ||
+                this.inputSystem.isJustPressed(INPUT_ACTIONS.WEST, "player02")
             ) {
                 this.startNextScene();
             }

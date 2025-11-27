@@ -4,15 +4,14 @@ import { Interactuables } from "./Interactuables.js";
 import { Ingredientes } from "./Ingredientes.js";
 
 export class IngredientBox extends Interactuables {
-    constructor(scene, x, y, ingredientKey = "carbon_0", textureKey, size = 32) {
+    constructor(scene, x, y, ingredientKey = "coal_0", textureKey, size = 32) {
 
         super(scene, x, y, textureKey, size);
         this.scene = scene;
         this.audio = this.scene.scene.get("Preloader");
         this.ingredientKey = ingredientKey;
-        console.log(this.ingredientKey)
 
-        this.ingredientSprite = this.scene.add.sprite(x, y - 2, "ingredientesAtlas", this.scene.ingredientesAtlas[this.ingredientKey].index);
+        this.ingredientSprite = this.scene.add.sprite(x, y - 2, "ingredientsAtlas", this.scene.ingredientsAtlas[this.ingredientKey].index);
 
         this.body.setCollideWorldBounds(true);
         this.body.setImmovable(true);
@@ -33,7 +32,7 @@ export class IngredientBox extends Interactuables {
             this.newIngredient = new Ingredientes(this.scene, player.x, player.y, this.ingredientKey)
             player.holdingSM.changeState("ingredient", { player: player, ingredient: this.newIngredient })
             this.stateMachine.changeState("anim", { box: this });
-            this.audio.cajaAudio.play({
+            this.audio.boxAudio.play({
                 volume: 0.2, // Ajusta el volumen
                 rate: 1    // Ajusta el pitch
             });
