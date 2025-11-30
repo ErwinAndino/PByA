@@ -76,6 +76,7 @@ export class Preloader extends Phaser.Scene {
         this.load.image("exclamationIcon", "SS_Icon_Exclamation.png");
         this.load.image("flagEN", "Flag_EN.png");
         this.load.image("flagES", "Flag_ES.png");
+        this.load.image("profileIcon", "ProfileIcon.png");
 
         //AUDIO----------------------------------------
         this.load.audio("playerWalk", "./audio/PByA_PJ_Walk.mp3");

@@ -5,15 +5,15 @@ import { getTranslations, getPhrase, getLanguageConfig } from "../../utils/Trans
 import keys from "../../utils/enums/keys";
 import LanguageSelector from "../classes/LanguageSelector.js";
 import { auth } from "../../utils/firebase/config.js";
-import { signOut } from "firebase/auth";
 import createInputs from "../../utils/createInputSystem.js";
-import { highlightText, logout } from "../../utils/mainMenuFunctions.js";
+import { highlightText, logout, profileIcon, createPopup } from "../../utils/mainMenuFunctions.js";
 
 export class MainMenu extends Phaser.Scene {
 
     #wasChangedLanguage = TODO;
     constructor() {
         super("MainMenu");
+        // Traducciones
         const { coop, versus, scoreboard, idioma, } = keys.sceneInitialMenu;
         const { grab, dash, lanzar, select, hit } = keys.controlsPaper
         const { noUser, yesUser, register, continueGoogle, continueGithub, errorGoogle, errorGithub, missingData, login, password } = keys.sceneFirebase;
@@ -33,34 +33,39 @@ export class MainMenu extends Phaser.Scene {
 
     create() {
 
-        this.language = this.language || ES;
-
         this.isInputLocked = false;
 
         createInputs(this)
 
         const { width, height } = this.scale;
 
-        this.registry.set("actualLevel", 0);
+        this.registry.set("actualLevel", 0); // El nivel determina la cantidad de ingredientes disponibles en la cocina (nivel 0 = tutorial)
 
         this.add.image(320, 180, "Main_Menu")
 
         const user = auth.currentUser;
 
-        if (user) {
-            const email = user.email;
+        profileIcon(this);
 
-            this.yesUserText = this.add.text(width / 2, 15, getPhrase(this.yesUser) + " " + email, {
+        createPopup(this);
+
+        if (user) { // mostrar si esta logeado 
+            const email = user.email;
+            this.yesUserText = this.add.text(width / 1.1, height / 12, getPhrase(this.yesUser) + " " + email, {
                 fontFamily: "Arial",
-                fontSize: "22px",
-                color: "#ffffff"
-            }).setOrigin(0.5);
+                fontSize: "14px",
+                color: "#ffffffff",
+                stroke: "#000000ff",
+                strokeThickness: 2,
+            }).setOrigin(1, 0.5);
         } else {
-            this.noUserText = this.add.text(width / 2, 15, getPhrase(this.noUser), {
+            this.noUserText = this.add.text(width / 1.1, height / 12, getPhrase(this.noUser), {
                 fontFamily: "Arial",
-                fontSize: "22px",
-                color: "#ff0d00ff"
-            }).setOrigin(0.5);
+                fontSize: "14px",
+                color: "#ff0d00ff",
+                stroke: "#000000ff",
+                strokeThickness: 2,
+            }).setOrigin(1, 0.5);
         }
 
         this.menuText = this.add.text(width / 10, height / 7, "MENU", {
@@ -125,7 +130,7 @@ export class MainMenu extends Phaser.Scene {
         ).setOrigin(0);
         this.languageText.angle = -5;
 
-        // paper de controles
+        // papel de controles
 
         this.westText = this.add.text(width / 1.22, height / 1.62, getPhrase(this.select), {
             fontSize: "24px",
@@ -135,30 +140,26 @@ export class MainMenu extends Phaser.Scene {
 
         this.westText.angle = 15
 
-
         // language selector
 
         this.languageActive = false
 
-
-        const langs = [
+        const langs = [ // declarar las banderas disponibles 
             { key: "flagES", code: ES },
             { key: "flagEN", code: EN },
         ];
-        this.languageSelector = new LanguageSelector(this, 215, 260, langs, this.language, (langCode) => {
-            console.log("Intentando cambiar idioma a: ", langCode);
-            if (this.language !== langCode) {
+        this.languageSelector = new LanguageSelector(this, 215, 260, langs, this.language, (langCode) => { // selector de banderas que pasa un idioma para setear
+            if (this.language !== langCode) { // si es el mismo idioma que ya estaba no se cambia
                 this.getTranslations(langCode)
                 localStorage.setItem("language", langCode);
-                console.log("Idioma cambiado a:", langCode);
             }
 
         });
-        this.languageSelector.setLanguage(this.language);
+        this.languageSelector.setLanguage(this.language); // setea el idioma al del local storage
 
-        // posicion del highlight inicial
-        this.selector = 3
+        this.selector = 3  // posicion del highlight inicial
         highlightText(this)
+        // keys para register
         this.RegisterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B);
         this.LoginKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.N);
         this.LogoutKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
@@ -194,7 +195,7 @@ export class MainMenu extends Phaser.Scene {
             this.yesUserText = false;
         }
 
-        if (this.selector === 0 && this.languageSelector.active) {
+        if (this.selector === 0 && this.languageSelector.active) { // cambia el language con derecha e izquierda
             // mover entre banderas con A/D o Flechas
             if (this.inputSystem.isJustPressed(INPUT_ACTIONS.LEFT, "player01") || this.inputSystem.isJustPressed(INPUT_ACTIONS.LEFT, "player02")) {
                 this.languageSelector.changeLanguage(-1);
@@ -232,8 +233,6 @@ export class MainMenu extends Phaser.Scene {
                 } else {
                     this.scene.start("Load", { nextScene: "Game" });
                 }
-
-
             }
             if (this.selector === 2) { // VERSUS
                 this.registry.set("mode", 2);
@@ -242,7 +241,6 @@ export class MainMenu extends Phaser.Scene {
                 } else {
                     this.scene.start("Load", { nextScene: "Game" });
                 }
-
             }
             if (this.selector === 1) {// SCOREBOARD
             }
@@ -268,7 +266,7 @@ export class MainMenu extends Phaser.Scene {
         this.isInputLocked = true;
         this.cameras.main.setAlpha(0.5);
 
-        this.loaderSprite = this.add.sprite(width / 2, height / 2 + 130, "bell").setScale(2);
+        this.loaderSprite = this.add.sprite(width / 2, height / 2 + 130, "bell").setScale(2); // simbolo de cargando animado
         this.tweens.add({
             targets: this.loaderSprite,
             scale: 3,
