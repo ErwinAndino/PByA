@@ -43,30 +43,40 @@ export class MainMenu extends Phaser.Scene {
 
         this.add.image(320, 180, "Main_Menu")
 
-        const user = auth.currentUser;
+        this.mode = import.meta.env.VITE_MODE;
 
-        profileIcon(this);
+        if(this.mode === "web"){
+            const user = auth.currentUser;
+    
+            profileIcon(this);
+    
+            createPopup(this);
+    
+            if (user) { // mostrar si esta logeado 
+                const email = user.email;
+                this.yesUserText = this.add.text(width / 1.1, height / 12, getPhrase(this.yesUser) + " " + email, {
+                    fontFamily: "Arial",
+                    fontSize: "14px",
+                    color: "#ffffffff",
+                    stroke: "#000000ff",
+                    strokeThickness: 2,
+                }).setOrigin(1, 0.5);
+            } else {
+                this.noUserText = this.add.text(width / 1.1, height / 12, getPhrase(this.noUser), {
+                    fontFamily: "Arial",
+                    fontSize: "14px",
+                    color: "#ff0d00ff",
+                    stroke: "#000000ff",
+                    strokeThickness: 2,
+                }).setOrigin(1, 0.5);
+            }
 
-        createPopup(this);
-
-        if (user) { // mostrar si esta logeado 
-            const email = user.email;
-            this.yesUserText = this.add.text(width / 1.1, height / 12, getPhrase(this.yesUser) + " " + email, {
-                fontFamily: "Arial",
-                fontSize: "14px",
-                color: "#ffffffff",
-                stroke: "#000000ff",
-                strokeThickness: 2,
-            }).setOrigin(1, 0.5);
-        } else {
-            this.noUserText = this.add.text(width / 1.1, height / 12, getPhrase(this.noUser), {
-                fontFamily: "Arial",
-                fontSize: "14px",
-                color: "#ff0d00ff",
-                stroke: "#000000ff",
-                strokeThickness: 2,
-            }).setOrigin(1, 0.5);
+            // keys para register
+            this.RegisterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B);
+            this.LoginKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.N);
+            this.LogoutKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
         }
+
 
         this.menuText = this.add.text(width / 10, height / 7, "MENU", {
             fontSize: "50px",
@@ -137,13 +147,13 @@ export class MainMenu extends Phaser.Scene {
             color: "#303decff",
             fontFamily: "MyFont"
         }).setOrigin(0.5);
-
+        
         this.westText.angle = 15
-
+        
         // language selector
-
+        
         this.languageActive = false
-
+        
         const langs = [ // declarar las banderas disponibles 
             { key: "flagES", code: ES },
             { key: "flagEN", code: EN },
@@ -153,16 +163,12 @@ export class MainMenu extends Phaser.Scene {
                 this.getTranslations(langCode)
                 localStorage.setItem("language", langCode);
             }
-
+            
         });
         this.languageSelector.setLanguage(this.language); // setea el idioma al del local storage
-
+        
         this.selector = 3  // posicion del highlight inicial
         highlightText(this)
-        // keys para register
-        this.RegisterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B);
-        this.LoginKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.N);
-        this.LogoutKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
     }
 
     update() {
@@ -182,17 +188,19 @@ export class MainMenu extends Phaser.Scene {
         // Si el input está bloqueado, no procesar nada
         if (this.isInputLocked) return;
 
-        if (Phaser.Input.Keyboard.JustDown(this.RegisterKey)) {
-            this.sound.stopAll();
-            this.scene.start("Register");
-        }
-        if (Phaser.Input.Keyboard.JustDown(this.LoginKey)) {
-            this.sound.stopAll();
-            this.scene.start("Login");
-        }
-        if (Phaser.Input.Keyboard.JustDown(this.LogoutKey)) {
-            logout(this)
-            this.yesUserText = false;
+        if(this.mode === "web"){
+            if (Phaser.Input.Keyboard.JustDown(this.RegisterKey)) {
+                this.sound.stopAll();
+                this.scene.start("Register");
+            }
+            if (Phaser.Input.Keyboard.JustDown(this.LoginKey)) {
+                this.sound.stopAll();
+                this.scene.start("Login");
+            }
+            if (Phaser.Input.Keyboard.JustDown(this.LogoutKey)) {
+                logout(this)
+                this.yesUserText = false;
+            }
         }
 
         if (this.selector === 0 && this.languageSelector.active) { // cambia el language con derecha e izquierda
