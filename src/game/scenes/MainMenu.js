@@ -45,6 +45,8 @@ export class MainMenu extends Phaser.Scene {
 
         this.mode = import.meta.env.VITE_MODE;
 
+        console.log("MODE:  ", this.mode);
+
         if(this.mode === "web"){
             const user = auth.currentUser;
     
